@@ -1,0 +1,29 @@
+plugins {
+    id 'groovy'
+    id 'application'
+}
+
+version '1.0'
+mainClassName = 'sonnicon.Eonbot'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    compile 'com.google.code.gson:gson:2.8.6'
+    compile ('net.dv8tion:JDA:4.1.1_163') {
+        exclude module: 'opus-java'
+    }
+
+}
+
+task uberjar(type: Jar) {
+    from files(sourceSets.main.output.classesDirs)
+    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
