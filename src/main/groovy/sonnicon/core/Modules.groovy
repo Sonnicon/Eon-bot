@@ -16,18 +16,25 @@ class Modules {
         config.recompileGroovySource = false
         config.setScriptBaseClass(ModuleScript.name.toString())
 
-        gse = new GroovyScriptEngine(Files.modules.path, new GroovyClassLoader(Eonbot.getClassLoader(), config))
+        GroovyClassLoader gcl = new GroovyClassLoader(Eonbot.getClassLoader(), config)
+        Files.modules.listFiles().each {file -> gcl.addURL(file.toURI().toURL())}
+
+        gse = new GroovyScriptEngine(Files.modules.path, gcl)
         gse.setConfig(config)
     }
 
-    static loadModule(String module) {
-        loadModule(module, "")
+    static boolean loadModule(String module) {
+        return loadModule(module, "")
     }
 
-    static loadModule(String module, String args) {
+    static boolean loadModule(String module, String args) {
+        File file = Files.fileModule()
+        if(!file.exists()) return false
         moduleName = module
+        gse.groovyClassLoader.addURL(file.toURI().toURL())
         Binding b = new Binding([arg: args, "moduleName": module])
-        gse.run(module + ".groovy", b)
+        gse.run(file.name, b)
+        true
     }
 
     static unloadModule(String module) {

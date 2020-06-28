@@ -20,7 +20,7 @@ class Files {
         modules.mkdirs()
     }
 
-    static fileModuleExists(String module) {
-        return new File(modules, module).exists()
+    static File fileModule(String module) {
+        return new File(modules, module + ".groovy")
     }
 }

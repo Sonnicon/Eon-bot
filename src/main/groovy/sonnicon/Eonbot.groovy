@@ -17,7 +17,7 @@ class Eonbot {
         jda.addEventListener(new EventReceiver())
         jda.awaitReady()
 
-        if (Files.fileModuleExists("startup"))
+        if (Files.fileModule("startup").exists())
             Modules.loadModule("startup")
     }
 }
