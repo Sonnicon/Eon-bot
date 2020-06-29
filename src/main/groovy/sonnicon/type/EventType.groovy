@@ -1,5 +1,7 @@
 package sonnicon.type
 
+import net.dv8tion.jda.api.events.ResumedEvent
+
 enum EventType {
     GenericEvent,
     GenericUpdateEvent,
@@ -183,5 +185,6 @@ enum EventType {
     GenericEmoteEvent,
     GenericEmoteUpdateEvent,
 
-    StatusUpdate
+    StatusUpdate,
+    ResumedEvent
 }

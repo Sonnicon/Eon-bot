@@ -1,7 +1,6 @@
 package sonnicon.core
 
 import net.dv8tion.jda.api.events.GenericEvent
-
 import sonnicon.type.EventType
 
 import java.util.function.Consumer
@@ -13,8 +12,11 @@ class Events {
 
     static fire(EventType type, GenericEvent event) {
         if (!events.containsKey(type)) return
-
         events.get(type).each { cons -> cons.value.accept(event) }
+    }
+
+    static on(EventType type, Consumer<GenericEvent> cons) {
+        on(type, cons, Modules.moduleName)
     }
 
     static on(EventType type, Consumer<GenericEvent> cons, String module) {

@@ -9,7 +9,7 @@ class Modules {
     static moduleMap = [:]
 
     private static GroovyScriptEngine gse
-    private static moduleName = ""
+    static moduleName = ""
 
     static init() {
         CompilerConfiguration config = new CompilerConfiguration()
@@ -28,7 +28,7 @@ class Modules {
     }
 
     static boolean loadModule(String module, String args) {
-        File file = Files.fileModule()
+        File file = Files.fileModule(module)
         if(!file.exists()) return false
         moduleName = module
         gse.groovyClassLoader.addURL(file.toURI().toURL())
