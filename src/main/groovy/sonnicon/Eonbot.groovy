@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDABuilder
 import sonnicon.core.Config
 import sonnicon.core.EventReceiver
 import sonnicon.core.Modules
+import sonnicon.util.Commands
 import sonnicon.util.Files
 
 class Eonbot {
@@ -12,6 +13,7 @@ class Eonbot {
     static void main(String[] args) {
         Files.init()
         Modules.init()
+        Commands.init()
 
         jda = new JDABuilder(Config.getToken()).build()
         jda.addEventListener(new EventReceiver())

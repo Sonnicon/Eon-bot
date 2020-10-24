@@ -3,6 +3,7 @@ package sonnicon.core
 import org.codehaus.groovy.control.CompilerConfiguration
 import sonnicon.Eonbot
 import sonnicon.type.ModuleScript
+import sonnicon.util.Commands
 import sonnicon.util.Files
 
 class Modules {
@@ -42,6 +43,7 @@ class Modules {
             (moduleMap.get(module) as ModuleScript).unload()
             moduleMap.remove(module)
             Events.remove(module)
+            Commands.remove(module)
         }
     }
 

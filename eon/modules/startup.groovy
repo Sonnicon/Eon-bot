@@ -1,5 +1,5 @@
 import sonnicon.core.Modules
 
 static void main(arg) {
-    Modules.loadModule("commands")
+    Modules.loadModule("basiccommands")
 }
