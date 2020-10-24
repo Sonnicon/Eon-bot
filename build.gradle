@@ -4,7 +4,7 @@ plugins {
 }
 
 version '1.0'
-mainClassName = 'sonnicon.Eonbot'
+mainClassName = 'sonnicon.eonbot.Eonbot'
 
 repositories {
     jcenter()

@@ -1,6 +1,4 @@
-package sonnicon.type
-
-import net.dv8tion.jda.api.events.ResumedEvent
+package sonnicon.eonbot.type
 
 enum EventType {
     GenericEvent,

@@ -1,11 +1,11 @@
-package sonnicon
+package sonnicon.eonbot
 
 import net.dv8tion.jda.api.JDABuilder
-import sonnicon.core.Config
-import sonnicon.core.EventReceiver
-import sonnicon.core.Modules
-import sonnicon.util.Commands
-import sonnicon.util.Files
+import sonnicon.eonbot.core.Config
+import sonnicon.eonbot.core.EventReceiver
+import sonnicon.eonbot.core.Modules
+import sonnicon.eonbot.util.Commands
+import sonnicon.eonbot.util.Files
 
 class Eonbot {
     static jda

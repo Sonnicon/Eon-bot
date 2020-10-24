@@ -1,8 +1,8 @@
-package sonnicon.core
+package sonnicon.eonbot.core
 
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
-import sonnicon.type.EventType
+import sonnicon.eonbot.type.EventType
 
 class EventReceiver implements EventListener {
 

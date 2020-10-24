@@ -1,10 +1,10 @@
-package sonnicon.core
+package sonnicon.eonbot.core
 
 import org.codehaus.groovy.control.CompilerConfiguration
-import sonnicon.Eonbot
-import sonnicon.type.ModuleScript
-import sonnicon.util.Commands
-import sonnicon.util.Files
+import sonnicon.eonbot.Eonbot
+import sonnicon.eonbot.type.ModuleScript
+import sonnicon.eonbot.util.Commands
+import sonnicon.eonbot.util.Files
 
 class Modules {
     static moduleMap = [:]

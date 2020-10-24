@@ -1,8 +1,8 @@
-package sonnicon.util
+package sonnicon.eonbot.util
 
-import sonnicon.core.Events
-import sonnicon.core.Modules
-import sonnicon.type.EventType
+import sonnicon.eonbot.core.Events
+import sonnicon.eonbot.core.Modules
+import sonnicon.eonbot.type.EventType
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 import java.util.function.BiConsumer

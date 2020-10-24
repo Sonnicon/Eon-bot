@@ -1,4 +1,4 @@
-package sonnicon.core
+package sonnicon.eonbot.core
 
 class Config {
     static String token

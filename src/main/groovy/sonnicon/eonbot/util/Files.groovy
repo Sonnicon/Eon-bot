@@ -1,6 +1,6 @@
-package sonnicon.util
+package sonnicon.eonbot.util
 
-import sonnicon.core.Config
+import sonnicon.eonbot.core.Config
 
 class Files {
     static final File main = new File("eon/")

@@ -1,6 +1,6 @@
-package sonnicon.type
+package sonnicon.eonbot.type
 
-import sonnicon.core.Modules
+import sonnicon.eonbot.core.Modules
 
 class ModuleScript extends Script {
     ModuleScript() {
