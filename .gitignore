@@ -1,5 +1,5 @@
 .gradle/
 .idea/
 build/
-eon/token.txt
 gradle/
+/eon/config.json

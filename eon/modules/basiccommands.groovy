@@ -1,9 +1,9 @@
 import sonnicon.eonbot.util.Commands
 
-static void main(arg){
-    commands = new Commands()
+static void main(arg) {
+    Commands commands = new Commands()
 
-    commands.newCommand("echo",  { event, args ->
+    commands.newCommand("echo", { event, args ->
         if (args.size() > 0)
             event.channel.sendMessage(args.join(" ")).queue()
     })

@@ -1,5 +1,6 @@
 package sonnicon.eonbot.core
 
 class Config {
-    static String token
+    String token = ""
+    List<Long> operators = []
 }

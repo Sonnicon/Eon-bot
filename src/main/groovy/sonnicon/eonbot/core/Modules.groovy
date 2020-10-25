@@ -10,7 +10,7 @@ class Modules {
     static moduleMap = [:]
 
     private static GroovyScriptEngine gse
-    static moduleName = ""
+    static String moduleName = ""
 
     static init() {
         CompilerConfiguration config = new CompilerConfiguration()
@@ -18,7 +18,7 @@ class Modules {
         config.setScriptBaseClass(ModuleScript.name.toString())
 
         GroovyClassLoader gcl = new GroovyClassLoader(Eonbot.getClassLoader(), config)
-        Files.modules.listFiles().each {file -> gcl.addURL(file.toURI().toURL())}
+        Files.modules.listFiles().each { file -> gcl.addURL(file.toURI().toURL()) }
 
         gse = new GroovyScriptEngine(Files.modules.path, gcl)
         gse.setConfig(config)
@@ -30,7 +30,7 @@ class Modules {
 
     static boolean loadModule(String module, String args) {
         File file = Files.fileModule(module)
-        if(!file.exists()) return false
+        if (!file.exists()) return false
         moduleName = module
         gse.groovyClassLoader.addURL(file.toURI().toURL())
         Binding b = new Binding([arg: args, "moduleName": module])

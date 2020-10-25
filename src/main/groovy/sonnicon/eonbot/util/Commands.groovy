@@ -1,24 +1,27 @@
 package sonnicon.eonbot.util
 
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import sonnicon.eonbot.Eonbot
 import sonnicon.eonbot.core.Events
 import sonnicon.eonbot.core.Modules
 import sonnicon.eonbot.type.EventType
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import sonnicon.eonbot.type.PermissionLevel
 
 import java.util.function.BiConsumer
 
 class Commands {
-    static final quoteChars = ["\"", "'", "`"] as char[]
-    static final commandPrefix = "##"
+    static final char[] quoteChars = ["\"", "'", "`"] as char[]
+    static final String commandPrefix = "##"
 
-    static  HashMap<String, HashMap<String, Command>> commandMap = [:]
+    static HashMap<String, HashMap<String, Command>> commandMap = [:]
 
-    static init(){
+    static init() {
         Events.on(EventType.MessageReceivedEvent, { MessageReceivedEvent event ->
             if (event.author.isBot() || !event.message.contentRaw.startsWith(commandPrefix)) return
             def input = splitArgs(event.message.contentRaw.substring(commandPrefix.length()))
 
-            if(commandMap.find {
+            if (commandMap.find {
                 if (it.value.containsKey(input.get(0))) {
                     it.value.get(input.get(0)).run(event, input.subList(1, input.size()))
                     return true
@@ -30,7 +33,7 @@ class Commands {
         })
     }
 
-    static remove(String moduleName){
+    static remove(String moduleName) {
         commandMap.remove(moduleName)
     }
 
@@ -83,6 +86,7 @@ class Commands {
     class Command {
         final String name
         final BiConsumer<MessageReceivedEvent, List<String>> function
+        PermissionLevel permissionLevel = PermissionLevel.all
 
         Command(String name, BiConsumer<MessageReceivedEvent, List<String>> function, String moduleName) {
             this.name = name
@@ -93,7 +97,24 @@ class Commands {
         }
 
         def run(MessageReceivedEvent event, List<String> args) {
-            this.function.accept(event, args)
+            //todo unique user permissions
+            boolean allow = false
+            switch (permissionLevel) {
+                case PermissionLevel.all:
+                    allow = true
+                    break
+                case PermissionLevel.admins:
+                    allow = (event.guild.getMember(event.author).roles.find { it.permissions.contains(Permission.ADMINISTRATOR) })
+                    break
+                case PermissionLevel.operators:
+                    allow = Eonbot.config.operators.contains(event.author.idLong)
+                    break
+            }
+            if (allow) {
+                this.function.accept(event, args)
+            } else {
+                event.channel.sendMessage("You do not have permission to run this command.").queue()
+            }
         }
     }
 }
