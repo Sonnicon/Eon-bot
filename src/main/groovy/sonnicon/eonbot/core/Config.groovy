@@ -2,5 +2,9 @@ package sonnicon.eonbot.core
 
 class Config {
     String token = ""
-    List<Long> operators = []
+    HashSet<Long> operators = []
+
+    HashMap<String, ?> getMap(){
+        ["token" : token, "operators" : operators]
+    }
 }

@@ -1,20 +1,20 @@
 package sonnicon.eonbot.util
 
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import sonnicon.eonbot.Eonbot
 import sonnicon.eonbot.core.Events
 import sonnicon.eonbot.core.Modules
 import sonnicon.eonbot.type.EventType
-import sonnicon.eonbot.type.PermissionLevel
 
 import java.util.function.BiConsumer
+import java.util.function.BiFunction
 
 class Commands {
     static final char[] quoteChars = ["\"", "'", "`"] as char[]
     static final String commandPrefix = "##"
 
     static HashMap<String, HashMap<String, Command>> commandMap = [:]
+    static BiFunction<String, MessageReceivedEvent, Boolean> permissions = { s, e -> true }
 
     static init() {
         Events.on(EventType.MessageReceivedEvent, { MessageReceivedEvent event ->
@@ -26,7 +26,7 @@ class Commands {
                     it.value.get(input.get(0)).run(event, input.subList(1, input.size()))
                     return true
                 }
-                false
+                return false
             } == null) {
                 event.channel.sendMessage("Command `" + input.get(0) + "` not found.").queue()
             }
@@ -86,7 +86,6 @@ class Commands {
     class Command {
         final String name
         final BiConsumer<MessageReceivedEvent, List<String>> function
-        PermissionLevel permissionLevel = PermissionLevel.all
 
         Command(String name, BiConsumer<MessageReceivedEvent, List<String>> function, String moduleName) {
             this.name = name
@@ -97,20 +96,7 @@ class Commands {
         }
 
         def run(MessageReceivedEvent event, List<String> args) {
-            //todo unique user permissions
-            boolean allow = false
-            switch (permissionLevel) {
-                case PermissionLevel.all:
-                    allow = true
-                    break
-                case PermissionLevel.admins:
-                    allow = (event.guild.getMember(event.author).roles.find { it.permissions.contains(Permission.ADMINISTRATOR) })
-                    break
-                case PermissionLevel.operators:
-                    allow = Eonbot.config.operators.contains(event.author.idLong)
-                    break
-            }
-            if (allow) {
+            if (Eonbot.config.operators.contains(event.author.idLong) || permissions.apply(name, event)) {
                 this.function.accept(event, args)
             } else {
                 event.channel.sendMessage("You do not have permission to run this command.").queue()

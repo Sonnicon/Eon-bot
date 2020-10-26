@@ -31,6 +31,9 @@ class Modules {
     static boolean loadModule(String module, String args) {
         File file = Files.fileModule(module)
         if (!file.exists()) return false
+        //reload cleanup
+        unloadModule(module)
+
         moduleName = module
         gse.groovyClassLoader.addURL(file.toURI().toURL())
         Binding b = new Binding([arg: args, "moduleName": module])
