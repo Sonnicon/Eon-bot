@@ -21,16 +21,22 @@ class Commands {
             if (event.author.isBot() || !event.message.contentRaw.startsWith(commandPrefix)) return
             def input = splitArgs(event.message.contentRaw.substring(commandPrefix.length()))
 
-            if (commandMap.find {
-                if (it.value.containsKey(input.get(0))) {
-                    it.value.get(input.get(0)).run(event, input.subList(1, input.size()))
-                    return true
-                }
-                return false
-            } == null) {
+            Command c = getCommand(input.get(0))
+            if (c == null) {
                 event.channel.sendMessage("Command `" + input.get(0) + "` not found.").queue()
+            } else {
+                c.run(event, input.subList(1, input.size()))
             }
         })
+    }
+
+    static Command getCommand(String command) {
+        for (HashMap<String, Command> map : commandMap.values()) {
+            if (map.containsKey(command)) {
+                return map.get(command)
+            }
+        }
+        return null
     }
 
     static remove(String moduleName) {

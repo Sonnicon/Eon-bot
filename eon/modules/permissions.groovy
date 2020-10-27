@@ -79,6 +79,22 @@ static void main(arg) {
         }
         event.channel.sendMessage("No " + a + " overrides exist for <@" + id + ">").queue()
     }).defaultPermissions(2)
+
+    commands.newCommand("cmdpermit", { event, args ->
+        String c = args.get(0)
+        Integer i = Integer.parseInt(args.get(1))
+        if (presets.containsKey(i)) {
+            Commands.Command command = Commands.getCommand(c)
+            if (command == null) {
+                event.channel.sendMessage("Command " + c + " not found").queue()
+            } else {
+                command.defaultPermissions(i)
+                event.channel.sendMessage("Set default permission for " + c + " to " + i).queue()
+            }
+        } else {
+            event.channel.sendMessage("Permission preset " + i + " not found").queue()
+        }
+    }).defaultPermissions(2)
 }
 
 @Override
