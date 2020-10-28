@@ -13,7 +13,7 @@ repositories {
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.3.11'
     compile 'org.yaml:snakeyaml:1.8'
-    compile ('net.dv8tion:JDA:4.1.1_163') {
+    compile ('net.dv8tion:JDA:4.2.0_212') {
         exclude module: 'opus-java'
     }
 

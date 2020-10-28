@@ -1,4 +1,5 @@
 import sonnicon.eonbot.util.Commands
+import net.dv8tion.jda.internal.entities.ReceivedMessage
 
 static void main(arg) {
     Commands commands = new Commands()
@@ -16,5 +17,13 @@ static void main(arg) {
             Commands.commandMap.get(args.get(0)).each { c.add(it.value.name) }
         }
         event.channel.sendMessage(c.join(" ")).queue()
+    })
+
+    commands.newCommand("wipe", { event, args ->
+        if(args.size() == 1){
+            Integer i = Integer.parseUnsignedInt(args.get(0))
+            event.channel.purgeMessages(event.channel.getHistory().retrievePast(i + 1).complete())
+            event.channel.sendMessage("Deleted " + i + " messages").queue()
+        }
     })
 }

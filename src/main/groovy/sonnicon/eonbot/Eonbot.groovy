@@ -17,7 +17,7 @@ class Eonbot {
         Modules.init()
         Commands.init()
 
-        jda = new JDABuilder(config.getToken()).build()
+        jda = JDABuilder.createLight(config.getToken()).build()
         jda.addEventListener(new EventReceiver())
 
         if (Files.fileModule("startup").exists())
