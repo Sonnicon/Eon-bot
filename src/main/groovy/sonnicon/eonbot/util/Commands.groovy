@@ -23,7 +23,7 @@ class Commands {
 
             Command c = getCommand(input.get(0))
             if (c == null) {
-                event.channel.sendMessage("Command `" + input.get(0) + "` not found.").queue()
+                Messages.reply(event, "Command `" + input.get(0) + "` not found.")
             } else {
                 c.run(event, input.subList(1, input.size()))
             }
@@ -103,9 +103,14 @@ class Commands {
 
         def run(MessageReceivedEvent event, List<String> args) {
             if (Eonbot.config.operators.contains(event.author.idLong) || permissions.apply(name, event)) {
-                this.function.accept(event, args)
+                try {
+                    this.function.accept(event, args)
+                }catch(Exception ex){
+                    ex.printStackTrace()
+                    Messages.reply(event, "An error has occurred running this command.")
+                }
             } else {
-                event.channel.sendMessage("You do not have permission to run this command.").queue()
+                Messages.reply(event, "You do not have permission to run this command.")
             }
         }
     }

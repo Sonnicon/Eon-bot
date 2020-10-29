@@ -1,7 +1,9 @@
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
+import sonnicon.eonbot.util.Messages
 
 import java.util.function.Function
 
@@ -10,7 +12,13 @@ static void main(arg) {
 
     final HashMap<Integer, Function<MessageReceivedEvent, Boolean>> presets = [
             0: { m -> true },
-            1: { m -> m.guild.getMember(m.author).roles.find { it.permissions.contains(Permission.ADMINISTRATOR) } },
+            1: { m ->
+                if (m.isFromType(ChannelType.TEXT)) {
+                    return m.getMember().hasPermission(Permission.ADMINISTRATOR)
+                } else {
+                    return true
+                }
+            },
             2: { m -> false }
     ]
 
@@ -54,7 +62,7 @@ static void main(arg) {
         Files.yaml.dump(map, writer)
         writer.close()
 
-        event.channel.sendMessage("Set " + a + " override " + val + " for <@" + id + ">").queue()
+        Messages.reply(event, "Set " + a + " override " + val + " for <@" + id + ">")
     }).defaultPermissions(2)
 
     commands.newCommand("unpermit", { event, args ->
@@ -73,11 +81,11 @@ static void main(arg) {
                 FileWriter writer = new FileWriter(f)
                 Files.yaml.dump(map, writer)
                 writer.close()
-                event.channel.sendMessage("Removed " + a + " overrides for <@" + id + ">").queue()
+                Messages.reply(event, "Removed " + a + " overrides for <@" + id + ">", false)
                 return true
             }
         }
-        event.channel.sendMessage("No " + a + " overrides exist for <@" + id + ">").queue()
+        Messages.reply(event, "No " + a + " overrides exist for <@" + id + ">", false)
     }).defaultPermissions(2)
 
     commands.newCommand("cmdpermit", { event, args ->
@@ -86,13 +94,13 @@ static void main(arg) {
         if (presets.containsKey(i)) {
             Commands.Command command = Commands.getCommand(c)
             if (command == null) {
-                event.channel.sendMessage("Command " + c + " not found").queue()
+                Messages.reply(event, "Command " + c + " not found")
             } else {
                 command.defaultPermissions(i)
-                event.channel.sendMessage("Set default permission for " + c + " to " + i).queue()
+                Messages.reply(event, "Set default permission for " + c + " to " + i)
             }
         } else {
-            event.channel.sendMessage("Permission preset " + i + " not found").queue()
+            Messages.reply(event, "Permission preset " + i + " not found")
         }
     }).defaultPermissions(2)
 }
