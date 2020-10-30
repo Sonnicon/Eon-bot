@@ -3,9 +3,9 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
-import sonnicon.eonbot.util.Messages
-
 import java.util.function.Function
+
+import static messagesutil
 
 static void main(arg) {
     HashMap<String, Integer> commandDefaults = [:]
@@ -62,7 +62,7 @@ static void main(arg) {
         Files.yaml.dump(map, writer)
         writer.close()
 
-        Messages.reply(event, "Set " + a + " override " + val + " for <@" + id + ">")
+        messagesutil.reply(event, "Set " + a + " override " + val + " for <@" + id + ">")
     }).defaultPermissions(2)
 
     commands.newCommand("unpermit", { event, args ->
@@ -81,11 +81,11 @@ static void main(arg) {
                 FileWriter writer = new FileWriter(f)
                 Files.yaml.dump(map, writer)
                 writer.close()
-                Messages.reply(event, "Removed " + a + " overrides for <@" + id + ">", false)
+                messagesutil.reply(event, "Removed " + a + " overrides for <@" + id + ">", false)
                 return true
             }
         }
-        Messages.reply(event, "No " + a + " overrides exist for <@" + id + ">", false)
+        messagesutil.reply(event, "No " + a + " overrides exist for <@" + id + ">", false)
     }).defaultPermissions(2)
 
     commands.newCommand("cmdpermit", { event, args ->
@@ -94,13 +94,13 @@ static void main(arg) {
         if (presets.containsKey(i)) {
             Commands.Command command = Commands.getCommand(c)
             if (command == null) {
-                Messages.reply(event, "Command " + c + " not found")
+                messagesutil.reply(event, "Command " + c + " not found")
             } else {
                 command.defaultPermissions(i)
-                Messages.reply(event, "Set default permission for " + c + " to " + i)
+                messagesutil.reply(event, "Set default permission for " + c + " to " + i)
             }
         } else {
-            Messages.reply(event, "Permission preset " + i + " not found")
+            messagesutil.reply(event, "Permission preset " + i + " not found")
         }
     }).defaultPermissions(2)
 }
