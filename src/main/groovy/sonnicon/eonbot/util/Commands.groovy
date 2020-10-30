@@ -23,7 +23,7 @@ class Commands {
 
             Command c = getCommand(input.get(0))
             if (c == null) {
-                Messages.reply(event, "Command `" + input.get(0) + "` not found.")
+                event.channel.sendMessage("Command `" + input.get(0).replaceAll("[@]", "") + "` not found.").queue()
             } else {
                 c.run(event, input.subList(1, input.size()))
             }
@@ -107,10 +107,10 @@ class Commands {
                     this.function.accept(event, args)
                 }catch(Exception ex){
                     ex.printStackTrace()
-                    Messages.reply(event, "An error has occurred running this command.")
+                    event.channel.sendMessage("An error has occurred running this command.").queue()
                 }
             } else {
-                Messages.reply(event, "You do not have permission to run this command.")
+                event.channel.sendMessage("You do not have permission to run this command.").queue()
             }
         }
     }
