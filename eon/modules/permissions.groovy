@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
 import java.util.function.Function
-import java.util.regex.Pattern
 
 import static messagesutil
 
@@ -46,8 +45,8 @@ static void main(arg) {
     commands.newCommand("permit", { event, args ->
         Long id = Long.parseLong(args.get(0).substring(3, args.get(0).length() - 1))
         String a = args.get(1)
-        if(!verify(a)) {
-            messagesutil.reply(event, "Only alphanumeric values please")
+        if(!Files.verify(a)) {
+            messagesutil.reply(event, "Illegal value")
             return
         }
         File f = new File(Files.permissions, a + ".yaml")
@@ -73,8 +72,8 @@ static void main(arg) {
     commands.newCommand("unpermit", { event, args ->
         Long id = Long.parseLong(args.get(0).substring(3, args.get(0).length() - 1))
         String a = args.get(1)
-        if(!verify(a)) {
-            messagesutil.reply(event, "Only alphanumeric values please")
+        if(!Files.verify(a)) {
+            messagesutil.reply(event, "Illegal value")
             return
         }
         File f = new File(Files.permissions, a + ".yaml")
@@ -112,10 +111,6 @@ static void main(arg) {
             messagesutil.reply(event, "Permission preset " + i + " not found")
         }
     }).defaultPermissions(2)
-}
-
-static boolean verify(String name){
-    return Pattern.matches("^[a-zA-Z0-9]+\$", name)
 }
 
 @Override

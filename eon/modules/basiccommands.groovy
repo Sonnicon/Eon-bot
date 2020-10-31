@@ -19,7 +19,7 @@ static void main(arg) {
         } else {
             Commands.commandMap.get(args.get(0)).each { c.add(it.value.name) }
         }
-        messagesutil.reply(event, c.join(" "))
+        messagesutil.reply(event, "`" + c.join("` `") + "`")
     })
 
     commands.newCommand("wipe", { event, args ->
