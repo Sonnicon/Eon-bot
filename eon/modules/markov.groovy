@@ -35,6 +35,43 @@ static void main(arg) {
         }
     })
 
+    commands.newCommand("markov unload", { event, args ->
+        loaded = false
+        name = null
+        datas = null
+        messagesutil.reply(event, "Unloaded current chain (if any)")
+    })
+
+    commands.newCommand("markov loaded", { event, args ->
+        if(loaded){
+            messagesutil.reply(event, "Chain `" + name + "` is currently loaded")
+        }else {
+            messagesutil.reply(event, "No chain is currently loaded")
+        }
+    })
+
+    commands.newCommand("markov load", { event, args ->
+        if (args.size() > 0) {
+            name = args[0]
+            if(!Files.verify(name)){
+                messagesutil.reply(event, "Illegal value")
+                return
+            }
+            File target = getTarget(name)
+            if(target.exists()){
+                FileReader reader = new FileReader(target)
+                datas = Files.yaml.load(reader)
+                reader.close()
+                messagesutil.reply(event, "Loaded datas from `" + target.getName() + "`")
+            }else{
+                datas = new HashMap<>()
+                datas.put("@start", new HashMap<String, Integer>())
+                messagesutil.reply(event, "Starting new chain `" + name + "`")
+            }
+            loaded = true
+        }
+    })
+
     commands.newCommand("markov save", { event, args ->
         if(loaded) {
             File target = getTarget(name)
@@ -48,32 +85,34 @@ static void main(arg) {
     })
 
     commands.newCommand("markov add", { event, args ->
-        if(!loaded) {
+        if (!loaded) {
             messagesutil.reply(event, "Nothing is loaded")
             return
         }
-        ArrayList<String> list = new ArrayList()
-        for(String s : args){
-            list.addAll(Arrays.asList(s.split(" ")))
-        }
 
-        HashMap m = datas.get("@start")
-        for(int i = 0; i < list.size(); i++){
-            String w = list.get(i).toLowerCase().replaceAll("[^a-zA-Z]", "")
+        for (String str : args.join(" ").split("[.,]")) {
+            ArrayList<String> list = new ArrayList()
+            list.addAll(Arrays.asList(str.split(" ")) - "")
 
-            m.put(w, m.getOrDefault(w, 0) + 1)
-            if(datas.containsKey(w)){
-                m = datas.get(w)
-            }else{
-                m = new HashMap<String, Integer>()
-                datas.put(w, m)
+            HashMap m = datas.get("@start")
+            for (int i = 0; i < list.size(); i++) {
+                String w = list.get(i).toLowerCase().replaceAll("[^a-zA-Z]", "")
+                if(w.isEmpty()) continue
+
+                m.put(w, m.getOrDefault(w, 0) + 1)
+                if (datas.containsKey(w)) {
+                    m = datas.get(w)
+                } else {
+                    m = new HashMap<String, Integer>()
+                    datas.put(w, m)
+                }
+
+                if (i == list.size() - 1) {
+                    m.put("@end", m.getOrDefault(w, 0) + 1)
+                }
             }
-
-            if(i == list.size() - 1){
-                m.put("@end", m.getOrDefault(w, 0) + 1)
-            }
         }
-        messagesutil.reply(event, "Added sentence to markov chain `" + name + "`")
+        messagesutil.reply(event, "Added sentence(s) to markov chain `" + name + "`")
     })
 
     Random random = new Random()
