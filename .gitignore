@@ -3,5 +3,6 @@
 build/
 gradle/
 /eon/config.yaml
+/eon/log.txt
 /eon/perms/
 /eon/modules/markov/

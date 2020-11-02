@@ -12,7 +12,8 @@ class Events {
 
     static fire(EventType type, GenericEvent event) {
         if (!events.containsKey(type)) return
-        events.get(type).each { cons -> cons.value.accept(event) }
+        tmp = events.get(type)
+        tmp.each { cons -> cons.value.accept(event) }
     }
 
     static on(EventType type, Consumer<GenericEvent> cons) {
