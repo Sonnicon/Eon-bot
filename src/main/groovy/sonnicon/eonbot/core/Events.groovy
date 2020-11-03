@@ -12,7 +12,7 @@ class Events {
 
     static fire(EventType type, GenericEvent event) {
         if (!events.containsKey(type)) return
-        tmp = events.get(type)
+        tmp = events.get(type).collect()
         tmp.each { cons -> cons.value.accept(event) }
     }
 
