@@ -26,9 +26,11 @@ class Files {
             def writer = new FileWriter(configFile)
             yaml.dump(Eonbot.config.getMap(), writer)
             writer.close()
+
             System.err.println("Please save token into ${configFile.getAbsolutePath()}")
             System.exit(1)
         }
+
         modules.mkdirs()
         permissions.mkdirs()
     }
@@ -37,7 +39,7 @@ class Files {
         new File(modules, module + ".groovy")
     }
 
-    static boolean verify(String name){
+    static boolean verify(String name) {
         return Pattern.matches("^[a-zA-Z0-9\\s]+\$", name)
     }
 }

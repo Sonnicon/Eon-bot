@@ -36,7 +36,7 @@ class Commands {
                 return map.get(command)
             }
         }
-        return null
+        null
     }
 
     static remove(String moduleName) {
@@ -105,7 +105,7 @@ class Commands {
             if (Eonbot.config.operators.contains(event.author.idLong) || permissions.apply(name, event)) {
                 try {
                     this.function.accept(event, args)
-                }catch(Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace()
                     event.channel.sendMessage("An error has occurred running this command.").queue()
                 }

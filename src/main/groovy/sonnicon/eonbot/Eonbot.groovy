@@ -20,12 +20,14 @@ class Eonbot {
 
         jda = JDABuilder.createLight(config.getToken(),
                 GatewayIntent.GUILD_MESSAGES,
-                GatewayIntent.GUILD_MEMBERS)
+                GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.DIRECT_MESSAGES)
                 .build()
         jda.addEventListener(new EventReceiver())
 
-        if (Files.fileModule("startup").exists())
+        if (Files.fileModule("startup").exists()) {
             Modules.loadModule("startup")
+        }
 
         jda.awaitReady()
     }

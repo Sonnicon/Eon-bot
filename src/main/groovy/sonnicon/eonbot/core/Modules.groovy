@@ -8,9 +8,9 @@ import sonnicon.eonbot.util.Files
 
 class Modules {
     static moduleMap = [:]
+    static String moduleName = ""
 
     private static GroovyScriptEngine gse
-    static String moduleName = ""
 
     static init() {
         CompilerConfiguration config = new CompilerConfiguration()

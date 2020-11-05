@@ -7,7 +7,6 @@ import java.util.function.Consumer
 
 class Events {
     private static Map<EventType, Map<String, Consumer>> events = [:]
-
     private static tmp = []
 
     static fire(EventType type, GenericEvent event) {

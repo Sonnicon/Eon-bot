@@ -24,10 +24,6 @@ class messagesutil {
         builder.setTitle(title, url)
     }
 
-    static void embedField(){
-        builder.setAuthor()
-    }
-
     static void embedColor(Color color){
         builder.color = color
     }

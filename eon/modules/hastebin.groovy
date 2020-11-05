@@ -32,7 +32,9 @@ static void main(arg) {
                     out.write(buffer, 0, len)
                 }
 
-                messagesutil.reply(event, event.author.getAsMention() + " <https://hastebin.com/" + Files.yaml.load(con.getInputStream()).get("key") + ">", false)
+                messagesutil.embed(a.getFileName())
+                messagesutil.embedDescription("https://hastebin.com/" + Files.yaml.load(con.getInputStream()).get("key"))
+                messagesutil.replyEmbed(event)
             }
         }
     })
