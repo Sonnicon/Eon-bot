@@ -1,16 +1,17 @@
 import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
-import java.time.LocalTime;
+
+import java.time.LocalTime
 
 import static messagesutil
 
 static void main(arg) {
     final HashMap<Integer, String> states = [
-            0 : "Startup",
-            1 : "Pregame",
-            2 : "Setting Up",
-            3 : "Playing",
-            4 : "Finished"
+            0: "Startup",
+            1: "Pregame",
+            2: "Setting Up",
+            3: "Playing",
+            4: "Finished"
     ]
 
     Commands commands = new Commands()
@@ -19,7 +20,7 @@ static void main(arg) {
         String key
         if (args.size() == 0) {
             key = "terry"
-        }else{
+        } else {
             key = args.get(0)
         }
 
@@ -30,18 +31,24 @@ static void main(arg) {
         s = s.replaceAll("[\"]", "'")
         HashMap<String, ?> result = Files.yaml.load(s)
 
-        if(!result.containsKey(key)){
+        if (!result.containsKey(key)) {
             messagesutil.reply(event, "Server " + target + " not found")
             return
         }
         result = result.get(key)
 
         messagesutil.embed("/tg/station " + result.get("serverdata").get("servername"))
-        messagesutil.embedDescription("Map: " + result.get("map_name") +
+        messagesutil.embedDescription(
+            result.get("error") ?
+                "Server error (restarting?)" :
+            ("Map: " + result.get("map_name") +
                 "\nTime: " + LocalTime.MIN.plusSeconds(result.get("round_duration")).toString() +
                 "\nPlayers: " + result.get("players") + "/" + result.get("soft_popcap") +
-                "\nState: " + states.get(result.get("gamestate")))
-        messagesutil.embedFooter(new Date().toString())
+                "\nState: " + states.get(result.get("gamestate")) +
+                "\nShuttle: " + result.get("shuttle_mode").toUpperCase() + " ("
+                    + LocalTime.MIN.plusSeconds(result.get("shuttle_timer")).toString() + ")")
+        )
+        messagesutil.embedFooter(new Date(result.get("cachetime")).toString())
         messagesutil.replyEmbed(event)
     })
 }
