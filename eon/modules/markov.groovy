@@ -1,3 +1,4 @@
+import net.dv8tion.jda.api.entities.Message
 import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
 
@@ -16,17 +17,17 @@ static void main(arg) {
     commands.newCommand("markov load", { event, args ->
         if (args.size() > 0) {
             name = args[0]
-            if(!Files.verify(name)){
+            if (!Files.verify(name)) {
                 messagesutil.reply(event, "Illegal value")
                 return
             }
             File target = getTarget(name)
-            if(target.exists()){
+            if (target.exists()) {
                 FileReader reader = new FileReader(target)
                 datas = Files.yaml.load(reader)
                 reader.close()
                 messagesutil.reply(event, "Loaded datas from `" + target.getName() + "`")
-            }else{
+            } else {
                 datas = new HashMap<>()
                 datas.put("@start", new HashMap<String, Integer>())
                 messagesutil.reply(event, "Starting new chain `" + name + "`")
@@ -43,9 +44,9 @@ static void main(arg) {
     })
 
     commands.newCommand("markov loaded", { event, args ->
-        if(loaded){
+        if (loaded) {
             messagesutil.reply(event, "Chain `" + name + "` is currently loaded")
-        }else {
+        } else {
             messagesutil.reply(event, "No chain is currently loaded")
         }
     })
@@ -53,17 +54,17 @@ static void main(arg) {
     commands.newCommand("markov load", { event, args ->
         if (args.size() > 0) {
             name = args[0]
-            if(!Files.verify(name)){
+            if (!Files.verify(name)) {
                 messagesutil.reply(event, "Illegal value")
                 return
             }
             File target = getTarget(name)
-            if(target.exists()){
+            if (target.exists()) {
                 FileReader reader = new FileReader(target)
                 datas = Files.yaml.load(reader)
                 reader.close()
                 messagesutil.reply(event, "Loaded datas from `" + target.getName() + "`")
-            }else{
+            } else {
                 datas = new HashMap<>()
                 datas.put("@start", new HashMap<String, Integer>())
                 messagesutil.reply(event, "Starting new chain `" + name + "`")
@@ -73,13 +74,13 @@ static void main(arg) {
     })
 
     commands.newCommand("markov save", { event, args ->
-        if(loaded) {
+        if (loaded) {
             File target = getTarget(name)
             FileWriter writer = new FileWriter(target)
             Files.yaml.dump(datas, writer)
             writer.close()
             messagesutil.reply(event, "Saved datas to `" + target.getName() + "`")
-        }else{
+        } else {
             messagesutil.reply(event, "Nothing is loaded")
         }
     })
@@ -90,35 +91,67 @@ static void main(arg) {
             return
         }
 
-        for (String str : args.join(" ").split("[.,]")) {
-            ArrayList<String> list = new ArrayList()
-            list.addAll(Arrays.asList(str.split(" ")) - "")
+        InputStream stream
 
-            HashMap m = datas.get("@start")
-            for (int i = 0; i < list.size(); i++) {
-                String w = list.get(i).toLowerCase().replaceAll("[^a-zA-Z]", "")
-                if(w.isEmpty()) continue
+        // initialize stream
+        if (event.message.attachments.size() > 0) {
+            Message.Attachment a = event.message.attachments.get(0)
+            if (!a.image && !a.video && a.size <= 5000000) {
+                stream = a.retrieveInputStream().get()
+            } else {
+                messagesutil.reply(event, "Bad attachment")
+                return
+            }
+        } else {
+            stream = new ByteArrayInputStream(args.join(" ").getBytes("UTF-8"))
+        }
 
-                m.put(w, m.getOrDefault(w, 0) + 1)
-                if (datas.containsKey(w)) {
-                    m = datas.get(w)
-                } else {
-                    m = new HashMap<String, Integer>()
-                    datas.put(w, m)
+        HashMap m = datas.get("@start")
+        while (true) {
+            ByteArrayOutputStream result = new ByteArrayOutputStream()
+            boolean end = false
+
+            // read word
+            int r
+            while (true) {
+                r = stream.read()
+                if (((char) r) == " " as char) {
+                    break
+                } else if (",.;".indexOf(r) != -1 || r == -1) {
+                    end = true
+                    break
                 }
+                result.write(r)
+            }
 
-                if (i == list.size() - 1) {
-                    m.put("@end", m.getOrDefault(w, 0) + 1)
+            // add to maps
+            String w = result.toString("UTF-8").toLowerCase()
+            if (w.isEmpty()) continue
+
+            m.put(w, m.getOrDefault(w, 0) + 1)
+            if (datas.containsKey(w)) {
+                m = datas.get(w)
+            } else {
+                m = new HashMap<String, Integer>()
+                datas.put(w, m)
+            }
+
+            if (end) {
+                m.put("@end", m.getOrDefault("@end", 0) + 1)
+                if (r == -1) {
+                    break
                 }
+                m = datas.get("@start")
             }
         }
+        stream.close()
         messagesutil.reply(event, "Added sentence(s) to markov chain `" + name + "`")
     })
 
     Random random = new Random()
 
     commands.newCommand("markov generate", { event, args ->
-        if(!loaded) {
+        if (!loaded) {
             messagesutil.reply(event, "Nothing is loaded")
             return
         }
@@ -126,7 +159,7 @@ static void main(arg) {
         StringJoiner joiner = new StringJoiner(" ")
         String next = "@start"
 
-        while(true){
+        while (true) {
             HashMap<String, Integer> map = datas.get(next)
             int total = map.values().sum()
 
@@ -136,7 +169,7 @@ static void main(arg) {
                 return index <= 0
             }.key
 
-            if(next.equals("@end") || joiner.length() > 350){
+            if (next.equals("@end") || joiner.length() > 350) {
                 break
             }
             joiner.add(next)
@@ -146,6 +179,6 @@ static void main(arg) {
     })
 }
 
-static File getTarget(String name){
+static File getTarget(String name) {
     new File(Files.modules, "markov/" + name + ".yaml")
 }
