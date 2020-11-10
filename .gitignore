@@ -6,3 +6,4 @@ gradle/
 /eon/log.txt
 /eon/perms/
 /eon/modules/markov/
+/eon/modules/serverlog.yaml
