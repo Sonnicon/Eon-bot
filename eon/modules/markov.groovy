@@ -115,18 +115,22 @@ static void main(arg) {
             int r
             while (true) {
                 r = stream.read()
-                if (((char) r) == " " as char) {
+                if (r as char == " " as char) {
                     break
-                } else if (",.;".indexOf(r) != -1 || r == -1) {
+                } else if (".;?!".indexOf(r) != -1 || r == -1) {
+                    // new sentences
                     end = true
                     break
+                } else if (",:'\"()[]".indexOf(r) != -1) {
+                    // ignored characters
+                    continue
                 }
                 result.write(r)
             }
 
             // add to maps
             String w = result.toString("UTF-8").toLowerCase()
-            if (w.isEmpty()) continue
+            if (w.isEmpty() && r != -1) continue
 
             m.put(w, m.getOrDefault(w, 0) + 1)
             if (datas.containsKey(w)) {
