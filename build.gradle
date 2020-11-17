@@ -8,10 +8,11 @@ mainClassName = 'sonnicon.eonbot.Eonbot'
 
 repositories {
     jcenter()
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    compile 'org.codehaus.groovy:groovy:3.0.6'
     compile 'org.yaml:snakeyaml:1.8'
     compile ('net.dv8tion:JDA:4.2.0_212') {
         exclude module: 'opus-java'
