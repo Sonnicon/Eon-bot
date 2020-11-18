@@ -11,7 +11,6 @@ class Files {
 
     static final File main = new File("eon/")
     static final File modules = new File(main, "modules/")
-    static final File permissions = new File(main, "perms/")
 
     static init() {
         File configFile = new File(main, "config.yaml")
@@ -32,7 +31,6 @@ class Files {
         }
 
         modules.mkdirs()
-        permissions.mkdirs()
     }
 
     static File fileModule(String module) {

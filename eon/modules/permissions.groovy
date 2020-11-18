@@ -8,6 +8,9 @@ import java.util.function.Function
 import static messagesutil
 
 static void main(arg) {
+    final File permissions = new File(Files.main, "perms/")
+    permissions.mkdirs()
+
     HashMap<String, Integer> commandDefaults = [:]
 
     final HashMap<Integer, Function<MessageReceivedEvent, Boolean>> presets = [
@@ -49,7 +52,7 @@ static void main(arg) {
             messagesutil.reply(event, "Illegal value")
             return
         }
-        File f = new File(Files.permissions, a + ".yaml")
+        File f = new File(permissions, a + ".yaml")
         HashMap<Long, Boolean> map
         if (f.exists()) {
             FileReader reader = new FileReader(f)
@@ -76,7 +79,7 @@ static void main(arg) {
             messagesutil.reply(event, "Illegal value")
             return
         }
-        File f = new File(Files.permissions, a + ".yaml")
+        File f = new File(permissions, a + ".yaml")
 
         HashMap<Long, Boolean> map
         if (f.exists()) {
