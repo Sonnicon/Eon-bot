@@ -5,7 +5,7 @@ import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
 import java.util.function.Function
 
-import static messagesutil
+import messagesutil
 
 static void main(arg) {
     final File permissions = new File(Files.main, "perms/")
@@ -26,7 +26,7 @@ static void main(arg) {
     ]
 
     Commands.permissions = { s, e ->
-        File f = new File(Files.permissions, s + ".yaml")
+        File f = new File(permissions, s + ".yaml")
         if (f.exists()) {
             FileReader reader = new FileReader(f)
             HashMap<Long, Boolean> map = Files.yaml.load(reader)

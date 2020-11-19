@@ -3,7 +3,7 @@ import sonnicon.eonbot.util.Files
 
 import java.time.LocalTime
 
-import static messagesutil
+import messagesutil
 
 static void main(arg) {
     final HashMap<Integer, String> states = [

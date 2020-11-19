@@ -3,7 +3,7 @@ import net.dv8tion.jda.api.entities.Message
 import sonnicon.eonbot.util.Commands
 import java.time.Instant
 
-import static messagesutil
+import messagesutil
 
 static void main(arg) {
     Commands commands = new Commands()

@@ -2,7 +2,7 @@ import net.dv8tion.jda.api.entities.Message
 import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
 
-import static messagesutil
+import messagesutil
 
 static void main(arg) {
     final URL url = new URL("https://hastebin.com/documents")

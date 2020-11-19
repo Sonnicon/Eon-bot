@@ -6,7 +6,7 @@ import sonnicon.eonbot.util.Files
 
 import java.util.function.Function
 
-import static messagesutil
+import messagesutil
 
 static void main(arg) {
     HashMap<Long, Long> channels = [:]

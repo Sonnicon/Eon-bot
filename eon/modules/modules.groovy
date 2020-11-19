@@ -2,7 +2,7 @@ import sonnicon.eonbot.core.Modules
 import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
 
-import static messagesutil
+import messagesutil
 
 static void main(arg) {
     Commands commands = new Commands()
