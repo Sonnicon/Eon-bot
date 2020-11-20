@@ -14,28 +14,6 @@ static void main(arg) {
 
     Commands commands = new Commands()
 
-    commands.newCommand("markov load", { event, args ->
-        if (args.size() > 0) {
-            name = args[0]
-            if (!Files.verify(name)) {
-                messagesutil.reply(event, "Illegal value")
-                return
-            }
-            File target = getTarget(name)
-            if (target.exists()) {
-                FileReader reader = new FileReader(target)
-                datas = Files.yaml.load(reader)
-                reader.close()
-                messagesutil.reply(event, "Loaded datas from `" + target.getName() + "`")
-            } else {
-                datas = new HashMap<>()
-                datas.put("@start", new HashMap<String, Integer>())
-                messagesutil.reply(event, "Starting new chain `" + name + "`")
-            }
-            loaded = true
-        }
-    })
-
     commands.newCommand("markov unload", { event, args ->
         loaded = false
         name = null

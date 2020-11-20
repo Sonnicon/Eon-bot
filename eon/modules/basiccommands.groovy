@@ -41,4 +41,8 @@ static void main(arg) {
             messagesutil.reply(event, "Cannot delete messages outside of server text channels")
         }
     }).defaultPermissions(1)
+
+    commands.newCommand("github", {event, args ->
+        messagesutil.reply(event, "https://github.com/Sonnicon/Eon-bot")
+    })
 }
