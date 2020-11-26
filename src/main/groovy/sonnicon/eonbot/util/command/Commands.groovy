@@ -1,12 +1,10 @@
-package sonnicon.eonbot.util
+package sonnicon.eonbot.util.command
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import sonnicon.eonbot.Eonbot
 import sonnicon.eonbot.core.Events
-import sonnicon.eonbot.core.Modules
 import sonnicon.eonbot.type.EventType
 
-import java.util.function.BiConsumer
 import java.util.function.BiFunction
 
 class Commands {
@@ -17,6 +15,17 @@ class Commands {
     static BiFunction<String, MessageReceivedEvent, Boolean> permissions = { s, e -> true }
 
     static init() {
+        new CommandArgType<String>("String")
+        new CommandArgType<Integer>("numbr")
+
+        new Command("testcommand", [new CommandArg(CommandArgType.getType("String"), "abcd", ["one", "two", "three"] as String[]), new CommandArg(CommandArgType.getType("String"), "string", false)] as CommandArg[], {
+            testArg, string = null ->
+                println testArg
+        }).call(null, ["two"])
+
+        println getCommand("testcommand").toString()
+
+
         Events.on(EventType.MessageReceivedEvent, { MessageReceivedEvent event ->
             if (event.author.isBot() || !event.message.contentRaw.startsWith(commandPrefix)) return
             def input = splitArgs(event.message.contentRaw.substring(commandPrefix.length()))
@@ -24,8 +33,11 @@ class Commands {
             Command c = getCommand(input.get(0))
             if (c == null) {
                 event.channel.sendMessage("Command `" + input.get(0).replaceAll("[@]", "") + "` not found.").queue()
+            } else if (Eonbot.config.operators.contains(event.author.idLong) || permissions.apply(name, event)) {
+                c.call(event, input.subList(1, input.size()))
             } else {
-                c.run(event, input.subList(1, input.size()))
+                //todo error message
+                println "no permission"
             }
         })
     }
@@ -79,39 +91,5 @@ class Commands {
         if (joiner.length() > 0)
             out.add(joiner.toString())
         out
-    }
-
-    Command newCommand(String name, BiConsumer<MessageReceivedEvent, List<String>> function) {
-        newCommand(name, function, Modules.moduleName)
-    }
-
-    Command newCommand(String name, BiConsumer<MessageReceivedEvent, List<String>> function, String moduleName) {
-        new Command(name, function, moduleName)
-    }
-
-    class Command {
-        final String name
-        final BiConsumer<MessageReceivedEvent, List<String>> function
-
-        Command(String name, BiConsumer<MessageReceivedEvent, List<String>> function, String moduleName) {
-            this.name = name
-            this.function = function
-            if (!commandMap.containsKey(moduleName))
-                commandMap.put(moduleName, [:])
-            commandMap.get(moduleName).put(name, this)
-        }
-
-        def run(MessageReceivedEvent event, List<String> args) {
-            if (Eonbot.config.operators.contains(event.author.idLong) || permissions.apply(name, event)) {
-                try {
-                    this.function.accept(event, args)
-                } catch (Exception ex) {
-                    ex.printStackTrace()
-                    event.channel.sendMessage("An error has occurred running this command.").queue()
-                }
-            } else {
-                event.channel.sendMessage("You do not have permission to run this command.").queue()
-            }
-        }
     }
 }

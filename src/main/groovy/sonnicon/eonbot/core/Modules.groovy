@@ -3,7 +3,7 @@ package sonnicon.eonbot.core
 import org.codehaus.groovy.control.CompilerConfiguration
 import sonnicon.eonbot.Eonbot
 import sonnicon.eonbot.type.ModuleScript
-import sonnicon.eonbot.util.Commands
+import sonnicon.eonbot.util.command.Commands
 import sonnicon.eonbot.util.Files
 
 class Modules {

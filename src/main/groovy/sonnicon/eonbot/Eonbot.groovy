@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import sonnicon.eonbot.core.Config
 import sonnicon.eonbot.core.EventReceiver
 import sonnicon.eonbot.core.Modules
-import sonnicon.eonbot.util.Commands
+import sonnicon.eonbot.util.command.Commands
 import sonnicon.eonbot.util.Files
 
 class Eonbot {
