@@ -1,11 +1,20 @@
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Message
-import sonnicon.eonbot.util.Commands
+//import sonnicon.eonbot.util.Commands
 import java.time.Instant
+
+import sonnicon.eonbot.util.command.Command
+import sonnicon.eonbot.util.command.CommandArg
+import sonnicon.eonbot.util.command.CommandArgType
 
 import messagesutil
 
-static void main(arg) {
+static void main(args) {
+    new Command("echo", [new CommandArg(CommandArgType.getType("String"), "Input Text")] as CommandArg[], { event, arg ->
+        messagesutil.reply(event, arg)
+    })
+    /*
+
     Commands commands = new Commands()
 
     commands.newCommand("echo", { event, args ->
@@ -44,5 +53,5 @@ static void main(arg) {
 
     commands.newCommand("github", {event, args ->
         messagesutil.reply(event, "https://github.com/Sonnicon/Eon-bot")
-    })
+    })*/
 }

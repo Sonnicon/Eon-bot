@@ -14,17 +14,11 @@ class Commands {
     static HashMap<String, HashMap<String, Command>> commandMap = [:]
     static BiFunction<String, MessageReceivedEvent, Boolean> permissions = { s, e -> true }
 
+    protected static boolean inited = false
+
     static init() {
-        new CommandArgType<String>("String")
-        new CommandArgType<Integer>("numbr")
-
-        new Command("testcommand", [new CommandArg(CommandArgType.getType("String"), "abcd", ["one", "two", "three"] as String[]), new CommandArg(CommandArgType.getType("String"), "string", false)] as CommandArg[], {
-            testArg, string = null ->
-                println testArg
-        }).call(null, ["two"])
-
-        println getCommand("testcommand").toString()
-
+        if(inited) return
+        inited = true
 
         Events.on(EventType.MessageReceivedEvent, { MessageReceivedEvent event ->
             if (event.author.isBot() || !event.message.contentRaw.startsWith(commandPrefix)) return

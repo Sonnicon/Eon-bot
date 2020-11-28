@@ -5,20 +5,20 @@ class CommandArgType<T> {
 
     protected final static HashMap<String, CommandArgType> types = [:]
 
-    public CommandArgType(String name) {
+    CommandArgType(String name) {
         this.name = name
         types.put(name, this)
     }
 
-    public T convert(String input) {
+    T convert(String input) {
         return (T) input
     }
 
-    public String name() {
+    String name() {
         return name
     }
 
-    public static CommandArgType getType(String name) {
+    static CommandArgType getType(String name) {
         return types.get(name)
     }
 
