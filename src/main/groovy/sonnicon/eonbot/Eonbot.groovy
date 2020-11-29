@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import sonnicon.eonbot.core.Config
 import sonnicon.eonbot.core.EventReceiver
 import sonnicon.eonbot.core.Modules
-import sonnicon.eonbot.util.command.Commands
 import sonnicon.eonbot.util.Files
 
 class Eonbot {
@@ -16,7 +15,6 @@ class Eonbot {
     static void main(String[] args) {
         Files.init()
         Modules.init()
-        Commands.init()
 
         jda = JDABuilder.createLight(config.getToken(),
                 GatewayIntent.GUILD_MESSAGES,

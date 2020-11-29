@@ -1,6 +1,5 @@
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Message
-//import sonnicon.eonbot.util.Commands
 import java.time.Instant
 
 import sonnicon.eonbot.util.command.Command
@@ -12,7 +11,7 @@ import messagesutil
 static void main(args) {
     new Command("echo", [new CommandArg(CommandArgType.getType("String"), "Input Text")] as CommandArg[], { event, arg ->
         messagesutil.reply(event, arg)
-    })
+    }, true)
     /*
 
     Commands commands = new Commands()

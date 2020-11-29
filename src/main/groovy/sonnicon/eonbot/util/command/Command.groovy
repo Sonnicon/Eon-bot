@@ -7,11 +7,15 @@ class Command {
     public final String name
     protected final CommandArg[] args
     protected final Closure closure
+    protected final boolean extend
 
     protected requiredCount = 0, optionalCount = 0
 
-    Command(String name, CommandArg[] args, Closure closure) {
+    Command(String name, CommandArg[] args, Closure closure, boolean extend = false) {
         //verification
+        if(extend && args.length == 0){
+            throw new IllegalArgumentException("[" + Modules.moduleName + "] Cannot have extend with no arguments for command " + name)
+        }
         boolean hadOptional = false
         for (int i = 0; i < args.length; i++) {
             if (!hadOptional) {
@@ -19,6 +23,7 @@ class Command {
                     requiredCount++
                 } else {
                     hadOptional = true
+                    optionalCount++
                 }
             } else {
                 optionalCount++
@@ -31,6 +36,7 @@ class Command {
         this.name = name
         this.args = args
         this.closure = closure
+        this.extend = extend
 
         Commands.init()
         if (!Commands.commandMap.containsKey(Modules.moduleName))
@@ -39,21 +45,31 @@ class Command {
     }
 
     void call(MessageReceivedEvent event, List<String> inputArgs) {
-        if (inputArgs.size() > requiredCount || inputArgs.size() < requiredCount + optionalCount) {
+        if (!extend && inputArgs.size() > requiredCount + optionalCount) {
             //todo error message
             println "too many args"
+            return
+        }else if (inputArgs.size() < requiredCount){
+        //todo error message
+            println "not enough args"
             return
         }
 
         List<?> output = []
-        for (int i = 0; i < inputArgs.size(); i++) {
+        for (int i = 0; i < inputArgs.size() && i < args.size(); i++) {
             CommandArg arg = args[i]
-            if (arg.possibilities != null && !(inputArgs[i] in arg.possibilities)) {
+            String str
+            if(extend && i + 1 == args.size()){
+                str = String.join(" ", inputArgs.subList(i, inputArgs.size()))
+            }else{
+                str = inputArgs[i]
+            }
+            if (arg.possibilities != null && !(str in arg.possibilities)) {
                 //todo error message
                 println "arg not in possibilities"
                 return
             }
-            output.add(args[i].getType().convert(inputArgs[i]))
+            output.add(args[i].getType().convert(str))
         }
 
         closure(event, *output)
@@ -61,6 +77,6 @@ class Command {
 
     @Override
     String toString() {
-        return name + " " + args.join(" ")
+        return name + " " + args.join(" ") + (extend ? "..." : "")
     }
 }
