@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.Activity
 import sonnicon.eonbot.util.command.CommandArgType
 
 static void main(arg) {
-    String[] modules = ["commandargtypes", "basiccommands"]//["log", "permissions", "modules", "basiccommands", "markov"]
+    String[] modules = ["commandargtypes", "permissions", "basiccommands"]//["log", "permissions", "modules", "basiccommands", "markov"]
     modules.each {Modules.loadModule(it)}
 
     //Eonbot.jda.presence.setActivity(Activity.watching(" for " + Commands.commandPrefix))

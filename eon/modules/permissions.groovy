@@ -1,11 +1,12 @@
+import messagesutil
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
-import java.util.function.Function
+import sonnicon.eonbot.util.command.Command
+import sonnicon.eonbot.util.command.Commands
 
-import messagesutil
+import java.util.function.Function
 
 static void main(arg) {
     final File permissions = new File(Files.main, "perms/")
@@ -41,14 +42,13 @@ static void main(arg) {
         true
     }
 
-    Commands.Command.metaClass.defaultPermissions = { Integer i -> commandDefaults.put(name, i) }
+    Command.metaClass.defaultPermissions = { Integer i -> commandDefaults.put(name, i) }
 
-    Commands commands = new Commands()
 
-    commands.newCommand("permit", { event, args ->
+    /*commands.newCommand("permit", { event, args ->
         Long id = Long.parseLong(args.get(0).substring(3, args.get(0).length() - 1))
         String a = args.get(1)
-        if(!Files.verify(a)) {
+        if (!Files.verify(a)) {
             messagesutil.reply(event, "Illegal value")
             return
         }
@@ -75,7 +75,7 @@ static void main(arg) {
     commands.newCommand("unpermit", { event, args ->
         Long id = Long.parseLong(args.get(0).substring(3, args.get(0).length() - 1))
         String a = args.get(1)
-        if(!Files.verify(a)) {
+        if (!Files.verify(a)) {
             messagesutil.reply(event, "Illegal value")
             return
         }
@@ -103,7 +103,7 @@ static void main(arg) {
         String c = args.get(0)
         Integer i = Integer.parseInt(args.get(1))
         if (presets.containsKey(i)) {
-            Commands.Command command = Commands.getCommand(c)
+            Command command = Commands.getCommand(c)
             if (command == null) {
                 messagesutil.reply(event, "Command " + c + " not found")
             } else {
@@ -113,11 +113,11 @@ static void main(arg) {
         } else {
             messagesutil.reply(event, "Permission preset " + i + " not found")
         }
-    }).defaultPermissions(2)
+    }).defaultPermissions(2)*/
 }
 
 @Override
 void unload() {
     Commands.permissions = { s, e -> true }
-    Commands.Command.metaClass.defaultPermissions = { Integer i -> }
+    Command.metaClass.defaultPermissions = { Integer i -> }
 }
