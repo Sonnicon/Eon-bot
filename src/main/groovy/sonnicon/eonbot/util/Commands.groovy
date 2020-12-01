@@ -10,7 +10,7 @@ import java.util.function.BiConsumer
 import java.util.function.BiFunction
 
 class Commands {
-    static final char[] quoteChars = ["\"", "'", "`"] as char[]
+    static final char[] quoteChars = ["\"", "'", "`", "“", "”", "’", "’"] as char[]
     static final String commandPrefix = "##"
 
     static HashMap<String, HashMap<String, Command>> commandMap = [:]
