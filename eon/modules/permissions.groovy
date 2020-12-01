@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import sonnicon.eonbot.util.Files
 import sonnicon.eonbot.util.command.Command
+import sonnicon.eonbot.util.command.CommandArg
+import sonnicon.eonbot.util.command.CommandArgType
 import sonnicon.eonbot.util.command.Commands
 
 import java.util.function.Function
@@ -44,76 +46,78 @@ static void main(arg) {
 
     Command.metaClass.defaultPermissions = { Integer i -> commandDefaults.put(name, i) }
 
-
-    /*commands.newCommand("permit", { event, args ->
-        Long id = Long.parseLong(args.get(0).substring(3, args.get(0).length() - 1))
-        String a = args.get(1)
-        if (!Files.verify(a)) {
-            messagesutil.reply(event, "Illegal value")
-            return
-        }
-        File f = new File(permissions, a + ".yaml")
-        HashMap<Long, Boolean> map
-        if (f.exists()) {
-            FileReader reader = new FileReader(f)
-            map = Files.yaml.load(reader)
-            reader.close()
-        } else {
-            map = new HashMap<>()
-            f.createNewFile()
-        }
-        Boolean val = Boolean.parseBoolean(args.get(2))
-        map.put(id, val)
-
-        FileWriter writer = new FileWriter(f)
-        Files.yaml.dump(map, writer)
-        writer.close()
-
-        messagesutil.reply(event, "Set " + a + " override " + val + " for <@" + id + ">")
-    }).defaultPermissions(2)
-
-    commands.newCommand("unpermit", { event, args ->
-        Long id = Long.parseLong(args.get(0).substring(3, args.get(0).length() - 1))
-        String a = args.get(1)
-        if (!Files.verify(a)) {
-            messagesutil.reply(event, "Illegal value")
-            return
-        }
-        File f = new File(permissions, a + ".yaml")
-
-        HashMap<Long, Boolean> map
-        if (f.exists()) {
-            FileReader reader = new FileReader(f)
-            map = Files.yaml.load(reader)
-            reader.close()
-
-            if (map.containsKey(id)) {
-                map.remove(id)
-                FileWriter writer = new FileWriter(f)
-                Files.yaml.dump(map, writer)
-                writer.close()
-                messagesutil.reply(event, "Removed " + a + " overrides for <@" + id + ">", false)
-                return true
+    new Command("permit", [new CommandArg(CommandArgType.getType("User"), "Target"),
+                           new CommandArg(CommandArgType.getType("String"), "Command"),
+                           new CommandArg(CommandArgType.getType("Boolean"), "Setting")]
+            as CommandArg[], {
+        event, arg1, arg2, arg3 ->
+            if (!Files.verify(arg2)) {
+                messagesutil.reply(event, "Illegal value")
+                return
             }
-        }
-        messagesutil.reply(event, "No " + a + " overrides exist for <@" + id + ">", false)
-    }).defaultPermissions(2)
-
-    commands.newCommand("cmdpermit", { event, args ->
-        String c = args.get(0)
-        Integer i = Integer.parseInt(args.get(1))
-        if (presets.containsKey(i)) {
-            Command command = Commands.getCommand(c)
-            if (command == null) {
-                messagesutil.reply(event, "Command " + c + " not found")
+            File f = new File(permissions, arg2 + ".yaml")
+            HashMap<Long, Boolean> map
+            if (f.exists()) {
+                FileReader reader = new FileReader(f)
+                map = Files.yaml.load(reader)
+                reader.close()
             } else {
-                command.defaultPermissions(i)
-                messagesutil.reply(event, "Set default permission for " + c + " to " + i)
+                map = new HashMap<>()
+                f.createNewFile()
             }
-        } else {
-            messagesutil.reply(event, "Permission preset " + i + " not found")
-        }
-    }).defaultPermissions(2)*/
+            map.put(arg1, arg3)
+
+            FileWriter writer = new FileWriter(f)
+            Files.yaml.dump(map, writer)
+            writer.close()
+
+            messagesutil.reply(event, "Set " + arg2 + " override " + arg3 + " for <@" + arg1 + ">", false)
+    }).defaultPermissions(2)
+
+    new Command("unpermit", [new CommandArg(CommandArgType.getType("User"), "Target"),
+                             new CommandArg(CommandArgType.getType("String"), "Command")]
+            as CommandArg[], {
+        event, arg1, arg2 ->
+            if (!Files.verify(arg2)) {
+                messagesutil.reply(event, "Illegal value")
+                return
+            }
+            File f = new File(permissions, arg2 + ".yaml")
+
+            HashMap<Long, Boolean> map
+            if (f.exists()) {
+                FileReader reader = new FileReader(f)
+                map = Files.yaml.load(reader)
+                reader.close()
+
+                if (map.containsKey(arg1)) {
+                    map.remove(arg1)
+                    FileWriter writer = new FileWriter(f)
+                    Files.yaml.dump(map, writer)
+                    writer.close()
+                    messagesutil.reply(event, "Removed " + arg2 + " overrides for <@" + arg1 + ">", false)
+                    return true
+                }
+            }
+            messagesutil.reply(event, "No " + arg2 + " overrides exist for <@" + arg1 + ">", false)
+    }).defaultPermissions(2)
+
+    new Command("cmdpermit", [new CommandArg(CommandArgType.getType("String"), "Command"),
+                              new CommandArg(CommandArgType.getType("Integer"), "Level")]
+            as CommandArg[], {
+        event, arg1, arg2 ->
+            if (presets.containsKey(arg2)) {
+                Command command = Commands.getCommand(arg1)
+                if (command == null) {
+                    messagesutil.reply(event, "Command " + arg1 + " not found")
+                } else {
+                    command.defaultPermissions(arg2)
+                    messagesutil.reply(event, "Set default permission for " + arg1 + " to " + arg2)
+                }
+            } else {
+                messagesutil.reply(event, "Permission preset " + arg2 + " not found")
+            }
+    }).defaultPermissions(2)
 }
 
 @Override
