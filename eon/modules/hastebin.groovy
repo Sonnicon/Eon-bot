@@ -1,5 +1,7 @@
 import net.dv8tion.jda.api.entities.Message
-import sonnicon.eonbot.util.Commands
+import sonnicon.eonbot.util.command.Command
+import sonnicon.eonbot.util.command.CommandArg
+import sonnicon.eonbot.util.command.CommandArgType
 import sonnicon.eonbot.util.Files
 
 import messagesutil
@@ -8,14 +10,13 @@ static void main(arg) {
     final URL url = new URL("https://hastebin.com/documents")
     final byte[] buffer = new byte[1024]
 
-    final Commands commands = new Commands()
-
-    commands.newCommand("hastebin", { event, args ->
+    new Command("hastebin", [new CommandArg(CommandArgType.getType("Long"), "Message", false)] as CommandArg[],
+            { event, arg1 = 0 ->
         Message.Attachment a
         if(event.message.attachments.size() > 0){
             a = event.message.attachments.get(0)
-        }else if(args.size() > 0){
-            a = event.channel.retrieveMessageById(args.get(0)).complete().attachments.get(0)
+        }else if(arg1 != 0){
+            a = event.channel.retrieveMessageById(arg1).complete().attachments.get(0)
         }
 
         if(a != null){

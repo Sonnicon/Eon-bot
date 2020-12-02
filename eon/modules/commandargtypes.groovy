@@ -4,14 +4,28 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 static void main(args) {
-    new CommandArgType<Integer>("Integer"){
+    new CommandArgType<Short>("Short") {
+        @Override
+        Short convert(String input) {
+            return Short.parseShort(input)
+        }
+    }
+
+    new CommandArgType<Integer>("Integer") {
         @Override
         Integer convert(String input) {
             return Integer.parseInt(input)
         }
     }
 
-    new CommandArgType<Boolean>("Boolean"){
+    new CommandArgType<Long>("Long") {
+        @Override
+        Long convert(String input) {
+            return Long.parseLong(input)
+        }
+    }
+
+    new CommandArgType<Boolean>("Boolean") {
         @Override
         Boolean convert(String input) {
             return Boolean.parseBoolean(input)
@@ -21,13 +35,13 @@ static void main(args) {
     new CommandArgType<String>("String")
 
     Pattern userRegex = Pattern.compile("(^\\d+\$)|(?<=^<@!)(\\d+)(?=>\$)")
-    new CommandArgType<Long>("User"){
+    new CommandArgType<Long>("User") {
         @Override
         Long convert(String input) {
             Matcher m = userRegex.matcher(input)
-            if(m.find()){
+            if (m.find()) {
                 return Long.parseLong(m.group())
-            }else{
+            } else {
                 throw new IllegalArgumentException("Could not parse user")
             }
         }

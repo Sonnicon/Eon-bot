@@ -7,7 +7,7 @@ static void main(arg) {
     BufferedWriter writer = new BufferedWriter(new FileWriter(log, true))
 
     Events.on(EventType.MessageReceivedEvent, { event ->
-        if (!event.author.isBot() && event.message.contentRaw.startsWith(sonnicon.eonbot.util.Commands.commandPrefix)) {
+        if (!event.author.isBot() && event.message.contentRaw.startsWith(sonnicon.eonbot.util.command.Commands.commandPrefix)) {
             writer.append("[" + new Date() + "] " + "<" + event.author.id + "> " + event.message.contentRaw + "\n")
             writer.flush()
         }

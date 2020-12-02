@@ -1,9 +1,10 @@
-import sonnicon.eonbot.util.Commands
+import messagesutil
 import sonnicon.eonbot.util.Files
+import sonnicon.eonbot.util.command.Command
+import sonnicon.eonbot.util.command.CommandArg
+import sonnicon.eonbot.util.command.CommandArgType
 
 import java.time.LocalTime
-
-import messagesutil
 
 static void main(arg) {
     final HashMap<Integer, String> states = [
@@ -14,43 +15,36 @@ static void main(arg) {
             4: "Finished"
     ]
 
-    Commands commands = new Commands()
+    new Command("tgstation", [new CommandArg(CommandArgType.getType("String"), "Server", false)] as CommandArg[],
+            { event, arg1 = "terry" ->
 
-    commands.newCommand("tgstation", { event, args ->
-        String key
-        if (args.size() == 0) {
-            key = "terry"
-        } else {
-            key = args.get(0)
-        }
+                URL url = new URL("https://tgstation13.org/dynamicimages/serverinfo.json")
+                HttpURLConnection con = url.openConnection()
+                String s = readStream(con.getInputStream())
+                // yaml has problems with some things so this is necessary
+                s = s.replaceAll("[\"]", "'")
+                HashMap<String, ?> result = Files.yaml.load(s)
 
-        URL url = new URL("https://tgstation13.org/dynamicimages/serverinfo.json")
-        HttpURLConnection con = url.openConnection()
-        String s = readStream(con.getInputStream())
-        // yaml has problems with some things so this is necessary
-        s = s.replaceAll("[\"]", "'")
-        HashMap<String, ?> result = Files.yaml.load(s)
+                if (!result.containsKey(arg1)) {
+                    messagesutil.reply(event, "Server " + target + " not found")
+                    return
+                }
+                result = result.get(arg1)
 
-        if (!result.containsKey(key)) {
-            messagesutil.reply(event, "Server " + target + " not found")
-            return
-        }
-        result = result.get(key)
-
-        messagesutil.embed("/tg/station " + result.get("serverdata").get("servername"))
-        messagesutil.embedDescription(
-            result.get("error") ?
-                "Server error (restarting?)" :
-            ("Map: " + result.get("map_name") +
-                "\nTime: " + LocalTime.MIN.plusSeconds(result.get("round_duration")).toString() +
-                "\nPlayers: " + result.get("players") + "/" + result.get("soft_popcap") +
-                "\nState: " + states.get(result.get("gamestate")) +
-                "\nShuttle: " + result.get("shuttle_mode").toUpperCase() + " ("
-                    + LocalTime.MIN.plusSeconds(result.get("shuttle_timer")).toString() + ")")
-        )
-        messagesutil.embedFooter(new Date(result.get("cachetime")).toString())
-        messagesutil.replyEmbed(event)
-    })
+                messagesutil.embed("/tg/station " + result.get("serverdata").get("servername"))
+                messagesutil.embedDescription(
+                        result.get("error") ?
+                                "Server error (restarting?)" :
+                                ("Map: " + result.get("map_name") +
+                                        "\nTime: " + LocalTime.MIN.plusSeconds(result.get("round_duration")).toString() +
+                                        "\nPlayers: " + result.get("players") + "/" + result.get("soft_popcap") +
+                                        "\nState: " + states.get(result.get("gamestate")) +
+                                        "\nShuttle: " + result.get("shuttle_mode").toUpperCase() + " ("
+                                        + LocalTime.MIN.plusSeconds(result.get("shuttle_timer")).toString() + ")")
+                )
+                messagesutil.embedFooter(new Date(result.get("cachetime")).toString())
+                messagesutil.replyEmbed(event)
+            })
 }
 
 static String readStream(InputStream stream) {

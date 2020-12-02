@@ -1,12 +1,12 @@
+import messagesutil
 import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent
 import sonnicon.eonbot.core.Events
 import sonnicon.eonbot.type.EventType
-import sonnicon.eonbot.util.Commands
 import sonnicon.eonbot.util.Files
+import sonnicon.eonbot.util.command.Command
+import sonnicon.eonbot.util.command.CommandArg
 
 import java.util.function.Function
-
-import messagesutil
 
 static void main(arg) {
     HashMap<Long, Long> channels = [:]
@@ -16,15 +16,13 @@ static void main(arg) {
         reader.close()
     }
 
-    Commands commands = new Commands()
-
-    commands.newCommand("setLogChannel", { event, args ->
+    new Command("setLogChannel", [] as CommandArg[], { event ->
         channels.put(event.guild.idLong, event.channel.idLong)
         messagesutil.reply(event, "Now logging server events to this channel")
         saveChannels(channels)
     }).defaultPermissions(1)
 
-    commands.newCommand("unsetLogChannel", { event, args ->
+    new Command("unsetLogChannel", [] as CommandArg[], { event ->
         channels.remove(event.guild.idLong)
         messagesutil.reply(event, "No longer logging events in this server")
         saveChannels(channels)
