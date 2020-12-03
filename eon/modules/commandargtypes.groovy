@@ -1,4 +1,6 @@
 import sonnicon.eonbot.util.command.CommandArgType
+import sonnicon.eonbot.util.command.Command
+import sonnicon.eonbot.util.command.Commands
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -44,6 +46,17 @@ static void main(args) {
             } else {
                 throw new IllegalArgumentException("Could not parse user")
             }
+        }
+    }
+
+    new CommandArgType<Command>("Command") {
+        @Override
+        Command convert(String input) {
+            Command c = Commands.getCommand(input)
+            if (c == null) {
+                throw new IllegalArgumentException("Command not found")
+            }
+            c
         }
     }
 }

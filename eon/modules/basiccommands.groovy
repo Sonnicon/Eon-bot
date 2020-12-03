@@ -22,6 +22,11 @@ static void main(args) {
                 messagesutil.reply(event, "`" + c.join("` `") + "`")
             })
 
+    new Command("help", [new CommandArg(CommandArgType.getType("Command"), "Command")] as CommandArg[],
+            { event, arg ->
+                messagesutil.reply(event, arg.toString())
+            })
+
     new Command("wipe", [new CommandArg(CommandArgType.getType("Integer"), "Amount")] as CommandArg[],
             { event, arg ->
                 if (event.isFromType(ChannelType.TEXT)) {
