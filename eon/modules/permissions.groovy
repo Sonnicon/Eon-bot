@@ -28,7 +28,7 @@ static void main(arg) {
             2: { m -> false }
     ]
 
-    Commands.permissions = { s, e ->
+    Commands.metaClass.static.permissions = { String s, MessageReceivedEvent e ->
         File f = new File(permissions, s + ".yaml")
         if (f.exists()) {
             FileReader reader = new FileReader(f)
@@ -47,15 +47,15 @@ static void main(arg) {
     Command.metaClass.defaultPermissions = { Integer i -> commandDefaults.put(name, i) }
 
     new Command("permit", [new CommandArg(CommandArgType.getType("User"), "Target"),
-                           new CommandArg(CommandArgType.getType("String"), "Command"),
+                           new CommandArg(CommandArgType.getType("Command"), "Command"),
                            new CommandArg(CommandArgType.getType("Boolean"), "Setting")]
             as CommandArg[], {
         event, arg1, arg2, arg3 ->
-            if (!Files.verify(arg2)) {
+            if (!Files.verify(arg2.name)) {
                 messagesutil.reply(event, "Illegal value")
                 return
             }
-            File f = new File(permissions, arg2 + ".yaml")
+            File f = new File(permissions, arg2.name + ".yaml")
             HashMap<Long, Boolean> map
             if (f.exists()) {
                 FileReader reader = new FileReader(f)
@@ -71,18 +71,18 @@ static void main(arg) {
             Files.yaml.dump(map, writer)
             writer.close()
 
-            messagesutil.reply(event, "Set " + arg2 + " override " + arg3 + " for <@" + arg1 + ">", false)
+            messagesutil.reply(event, "Set " + arg2.name + " override " + arg3 + " for <@" + arg1 + ">", false)
     }).defaultPermissions(2)
 
     new Command("unpermit", [new CommandArg(CommandArgType.getType("User"), "Target"),
-                             new CommandArg(CommandArgType.getType("String"), "Command")]
+                             new CommandArg(CommandArgType.getType("Command"), "Command")]
             as CommandArg[], {
         event, arg1, arg2 ->
-            if (!Files.verify(arg2)) {
+            if (!Files.verify(arg2.name)) {
                 messagesutil.reply(event, "Illegal value")
                 return
             }
-            File f = new File(permissions, arg2 + ".yaml")
+            File f = new File(permissions, arg2.name + ".yaml")
 
             HashMap<Long, Boolean> map
             if (f.exists()) {
@@ -95,24 +95,23 @@ static void main(arg) {
                     FileWriter writer = new FileWriter(f)
                     Files.yaml.dump(map, writer)
                     writer.close()
-                    messagesutil.reply(event, "Removed " + arg2 + " overrides for <@" + arg1 + ">", false)
+                    messagesutil.reply(event, "Removed " + arg2.name + " overrides for <@" + arg1 + ">", false)
                     return true
                 }
             }
-            messagesutil.reply(event, "No " + arg2 + " overrides exist for <@" + arg1 + ">", false)
+            messagesutil.reply(event, "No " + arg2.name + " overrides exist for <@" + arg1 + ">", false)
     }).defaultPermissions(2)
 
-    new Command("cmdpermit", [new CommandArg(CommandArgType.getType("String"), "Command"),
+    new Command("cmdpermit", [new CommandArg(CommandArgType.getType("Command"), "Command"),
                               new CommandArg(CommandArgType.getType("Integer"), "Level")]
             as CommandArg[], {
         event, arg1, arg2 ->
             if (presets.containsKey(arg2)) {
-                Command command = Commands.getCommand(arg1)
                 if (command == null) {
-                    messagesutil.reply(event, "Command " + arg1 + " not found")
+                    messagesutil.reply(event, "Command " + arg1.name + " not found")
                 } else {
-                    command.defaultPermissions(arg2)
-                    messagesutil.reply(event, "Set default permission for " + arg1 + " to " + arg2)
+                    arg1.defaultPermissions(arg2)
+                    messagesutil.reply(event, "Set default permission for " + arg1.name + " to " + arg2)
                 }
             } else {
                 messagesutil.reply(event, "Permission preset " + arg2 + " not found")

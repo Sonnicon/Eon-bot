@@ -12,7 +12,6 @@ class Commands {
     static final String commandPrefix = "##"
 
     static HashMap<String, HashMap<String, Command>> commandMap = [:]
-    static BiFunction<String, MessageReceivedEvent, Boolean> permissions = { s, e -> true }
 
     protected static boolean inited = false
 
@@ -27,13 +26,17 @@ class Commands {
             Command c = getCommand(input.get(0))
             if (c == null) {
                 event.channel.sendMessage("Command `" + input.get(0).replaceAll("[@]", "") + "` not found.").queue()
-            } else if (Eonbot.config.operators.contains(event.author.idLong) || permissions.apply(name, event)) {
+            } else if (Eonbot.config.operators.contains(event.author.idLong) || permission(c.name, event)) {
                 c.call(event, input.subList(1, input.size()))
             } else {
                 //todo error message
                 println "no permission"
             }
         })
+    }
+
+    static boolean permission(String command, MessageReceivedEvent event){
+        true
     }
 
     static Command getCommand(String command) {
