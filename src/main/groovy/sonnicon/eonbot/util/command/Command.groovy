@@ -46,12 +46,10 @@ class Command {
 
     void call(MessageReceivedEvent event, List<String> inputArgs) {
         if (!extend && inputArgs.size() > requiredCount + optionalCount) {
-            //todo error message
-            println "too many args"
+            errorExcessArgs(event, this)
             return
         }else if (inputArgs.size() < requiredCount){
-        //todo error message
-            println "not enough args"
+            errorMissingArgs(event, this)
             return
         }
 
@@ -65,14 +63,25 @@ class Command {
                 str = inputArgs[i]
             }
             if (arg.possibilities != null && !(str in arg.possibilities)) {
-                //todo error message
-                println "arg not in possibilities"
+                errorUnknownArgs(event, this)
                 return
             }
             output.add(args[i].getType().convert(str))
         }
 
         closure(event, *output)
+    }
+
+    static errorMissingArgs(MessageReceivedEvent event, Command command){
+        event.channel.sendMessage(event.author.getAsMention() + " Missing command arguments.\n Correct usage: " + command.toString())
+    }
+
+    static errorExcessArgs(MessageReceivedEvent event, Command command){
+        event.channel.sendMessage(event.author.getAsMention() + " Too many command arguments.\n Correct usage: " + command.toString())
+    }
+
+    static errorUnknownArgs(MessageReceivedEvent event, Command command){
+        event.channel.sendMessage(event.author.getAsMention() + " Argument not in options.\n Correct usage: " + command.toString())
     }
 
     @Override

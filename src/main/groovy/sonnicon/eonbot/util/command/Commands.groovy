@@ -29,14 +29,17 @@ class Commands {
             } else if (Eonbot.config.operators.contains(event.author.idLong) || permission(c.name, event)) {
                 c.call(event, input.subList(1, input.size()))
             } else {
-                //todo error message
-                println "no permission"
+                errorNoPermission(event, c)
             }
         })
     }
 
     static boolean permission(String command, MessageReceivedEvent event){
         true
+    }
+
+    static void errorNoPermission(MessageReceivedEvent event, Command command){
+        event.channel.sendMessage(event.author.getAsMention() + " You do not have permission to run this command.")
     }
 
     static Command getCommand(String command) {
