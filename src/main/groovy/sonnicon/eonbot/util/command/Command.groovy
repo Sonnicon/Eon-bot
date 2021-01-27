@@ -73,15 +73,15 @@ class Command {
     }
 
     static errorMissingArgs(MessageReceivedEvent event, Command command){
-        event.channel.sendMessage(event.author.getAsMention() + " Missing command arguments.\n Correct usage: " + command.toString())
+        event.channel.sendMessage(event.author.getAsMention() + " Missing command arguments.\n Correct usage: " + command.toString()).queue()
     }
 
     static errorExcessArgs(MessageReceivedEvent event, Command command){
-        event.channel.sendMessage(event.author.getAsMention() + " Too many command arguments.\n Correct usage: " + command.toString())
+        event.channel.sendMessage(event.author.getAsMention() + " Too many command arguments.\n Correct usage: " + command.toString()).queue()
     }
 
     static errorUnknownArgs(MessageReceivedEvent event, Command command){
-        event.channel.sendMessage(event.author.getAsMention() + " Argument not in options.\n Correct usage: " + command.toString())
+        event.channel.sendMessage(event.author.getAsMention() + " Argument not in options.\n Correct usage: " + command.toString()).queue()
     }
 
     @Override
