@@ -1,0 +1,6 @@
+---
+echo:
+  childData:
+    type: "string"
+    regex: ".*"
+    name: "text"

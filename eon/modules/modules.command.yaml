@@ -1,0 +1,13 @@
+---
+load:
+  childData:
+    type: "string"
+    regex: ".*"
+    name: "name"
+unload:
+  childData:
+    type: "string"
+    regex: ".*"
+    name: "name"
+loaded:
+  childData:

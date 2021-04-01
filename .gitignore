@@ -1,4 +1,4 @@
 .gradle/
 .idea/
 build/
-eon/
+eon/config.yaml
