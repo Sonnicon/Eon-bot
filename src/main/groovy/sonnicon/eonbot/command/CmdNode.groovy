@@ -7,7 +7,7 @@ class CmdNode {
     CmdArg child
     CmdNode next
     Closure executor
-    boolean required
+    boolean required = true
 
     static Map<String, Class<? extends CmdArg>> childTypes = ["string": CmdArgString.class]
 
@@ -16,24 +16,21 @@ class CmdNode {
         child = childTypes.get(childData.remove("type")) newInstance(childData)
     }
 
-    boolean collect(List<String> data, Map<String, ?> parsed) {
-        if (executor) Commands.executor = executor
+    void collect(CmdResponse response, List<String> data, Map<String, ?> parsed) {
+        response.set(executor)
 
-        if (!data) {
-            if (required) {
-                //todo missing arg
-                return false
+        if (child) {
+            if (!data) {
+                if (required) {
+                    response.set(CmdResponse.CmdResponseType.missingArg)
+                }
+                return
             }
-            return true
+            if (!child.collect(data.remove(0), parsed)) {
+                response.set(CmdResponse.CmdResponseType.illegalArg)
+            } else if (next) {
+                next.collect(response, data, parsed)
+            }
         }
-
-        if (!child.collect(data.remove(0), parsed)) {
-            return false
-            //todo illegal arg
-        } else if (next) {
-            return next.collect(data, parsed)
-        }
-
-        return true
     }
 }

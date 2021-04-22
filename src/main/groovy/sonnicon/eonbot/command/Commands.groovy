@@ -19,16 +19,25 @@ class Commands {
         EventHandler.register(EventType.onMessageReceived, messageListener)
     }
 
-    static Closure executor
-
     static void handleCommand(String string, Message message = null) {
-        executor = null
         ArrayList<String> split = split(string)
         Map<String, ?> parsed = [:]
 
-        if (CommandRegistry.commands.get(split.remove(0)).collect(split, parsed)) {
-            if (executor) executor.call(parsed, message)
-            else println parsed
+        CmdNode command = CommandRegistry.commands.get(split.remove(0))
+        if (!command) {
+            if (message) message.reply("Command not found").queue()
+            else println("Command not found")
+            return
+        }
+
+        CmdResponse response = new CmdResponse()
+        command.collect(response, split, parsed)
+        if (response.type == CmdResponse.CmdResponseType.success) {
+            response.executor.call(parsed, message)
+        } else if (message) {
+            message.reply(response.type.name()).queue()
+        } else {
+            println(response.type.name())
         }
     }
 
