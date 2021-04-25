@@ -1,12 +1,13 @@
-import sonnicon.eonbot.command.CommandRegistry
 import sonnicon.eonbot.core.Modules
 
 class ModuleStartup extends Modules.ModuleBase {
 
-    void load() {
-        CommandRegistry.commands["load"].executor = { data, message ->
+    void load() {}
+
+    static Map<String, Closure> getExecutorMap() {
+        ["load"    : { data, message ->
             String response
-            if (Modules.load(data["name"])) {
+            if (Modules.load(data["name"], true)) {
                 response = "Loaded module"
                 if (message) message.reply(response).queue()
                 else println(response)
@@ -15,9 +16,7 @@ class ModuleStartup extends Modules.ModuleBase {
                 if (message) message.reply(response).queue()
                 else println(response)
             }
-        }
-
-        CommandRegistry.commands["unload"].executor = { data, message ->
+        }, "unload": { data, message ->
             String response
             if (Modules.unload(data["name"])) {
                 response = "Unloaded module"
@@ -28,17 +27,12 @@ class ModuleStartup extends Modules.ModuleBase {
                 if (message) message.reply(response).queue()
                 else println(response)
             }
-        }
-
-        CommandRegistry.commands["loaded"].executor = { data, message ->
+        }, "loaded": { data, message ->
             String response = Modules.loadedModules.keySet().toString()
             if (message) message.reply("`$response`").queue()
             else println(response)
-
-        }
+        }]
     }
 
-    void unload() {
-
-    }
+    void unload() {}
 }

@@ -1,5 +1,7 @@
 package sonnicon.eonbot.core
 
+
+import sonnicon.eonbot.command.CmdNode
 import sonnicon.eonbot.command.CommandRegistry
 
 class Modules {
@@ -14,26 +16,39 @@ class Modules {
         load()
     }
 
-    static ModuleBase load(String name = "startup") {
+    static ModuleBase load(String name = "startup", boolean force = false) {
         String filename = name + ".groovy"
         if (file(name, FileExtension.script).exists()) {
+            // unload existing
             if (loadedModules.containsKey(name)) {
+                if (!force) return null
                 unload(name)
             }
+            // load dependencies
+            File file = file(name, FileExtension.yaml)
+            Map<String, List> yaml
+            if (file.exists()) {
+                yaml = FileIO.yamlSlurper.parse(file) as Map<String, List>
+            }
+            if (yaml && yaml.containsKey("dependencies")) {
+                yaml.get("dependencies").each {
+                    load(it as String)
+                }
+            }
+            // load script
             binding.setProperty("name", name)
             ModuleBase mod = groovyScriptEngine.run(filename, binding) as ModuleBase
             loadedModules.put(name, mod)
-            File commands = file(name, FileExtension.command)
-            if(commands.exists())
-                CommandRegistry.loadYaml(commands, name)
+            // load commands
+            if (yaml && yaml.containsKey("commands"))
+                CommandRegistry.loadMap(yaml.get("commands") as Map<String, CmdNode>, name, mod.getExecutorMap())
             mod.load()
             mod
-        } else {
-            null
         }
+        null
     }
 
-    static protected File file(String name, FileExtension extension){
+    static protected File file(String name, FileExtension extension) {
         return new File(FileIO.FileType.modules.file, name + extension.extension)
     }
 
@@ -48,12 +63,13 @@ class Modules {
         }
     }
 
-    enum FileExtension{
+    enum FileExtension {
         script("groovy"),
-        command("command.yaml")
+        yaml("yaml")
 
         String extension
-        FileExtension(String ext){
+
+        FileExtension(String ext) {
             this.extension = "." + ext
         }
     }
@@ -64,6 +80,8 @@ class Modules {
         void load() {}
 
         void unload() {}
+
+        static Map<String, Closure> getExecutorMap() { null }
 
         @Override
         Object run() {

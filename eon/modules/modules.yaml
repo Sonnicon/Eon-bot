@@ -1,0 +1,16 @@
+---
+commands:
+  load:
+    childData:
+      type: "string"
+      regex: ".*"
+      name: "name"
+    executorKey: "load"
+  unload:
+    childData:
+      type: "string"
+      regex: ".*"
+      name: "name"
+    executorKey: "unload"
+  loaded:
+    executorKey: "loaded"

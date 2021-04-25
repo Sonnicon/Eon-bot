@@ -16,8 +16,16 @@ class CmdNode {
         child = childTypes.get(childData.remove("type")) newInstance(childData)
     }
 
+    void setExecutorKey(String executorKey) {
+        if (CommandRegistry.executorMap) {
+            this.executor = CommandRegistry.executorMap.get(executorKey)
+        }
+    }
+
     void collect(CmdResponse response, List<String> data, Map<String, ?> parsed) {
-        response.set(executor)
+        if (executor) {
+            response.set(executor)
+        }
 
         if (child) {
             if (!data) {

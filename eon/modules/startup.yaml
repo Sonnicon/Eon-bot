@@ -1,0 +1,10 @@
+---
+commands:
+  echo:
+    childData:
+      type: "string"
+      regex: ".*"
+      name: "text"
+    executorKey: "echo"
+dependencies:
+  - "modules"
