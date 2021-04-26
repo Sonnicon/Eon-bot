@@ -2,7 +2,7 @@
 commands:
   echo:
     childData:
-      type: "string"
+      type: "longstring"
       regex: ".*"
       name: "text"
     executorKey: "echo"

@@ -21,7 +21,10 @@ class Modules {
         if (file(name, FileExtension.script).exists()) {
             // unload existing
             if (loadedModules.containsKey(name)) {
-                if (!force) return null
+                if (!force) {
+                    println "Module $name already loaded, not forcing reload."
+                    return loadedModules.get(name)
+                }
                 unload(name)
             }
             // load dependencies
@@ -32,7 +35,10 @@ class Modules {
             }
             if (yaml && yaml.containsKey("dependencies")) {
                 yaml.get("dependencies").each {
-                    load(it as String)
+                    if (!load(it as String)) {
+                        println "Could not load dependency '$it' for module '$name'; Aborting."
+                        return null
+                    }
                 }
             }
             // load script
@@ -43,9 +49,11 @@ class Modules {
             if (yaml && yaml.containsKey("commands"))
                 CommandRegistry.loadMap(yaml.get("commands") as Map<String, CmdNode>, name, mod.getExecutorMap())
             mod.load()
+            println "Loaded module " + name
             mod
+        } else {
+            null
         }
-        null
     }
 
     static protected File file(String name, FileExtension extension) {

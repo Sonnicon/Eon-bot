@@ -1,6 +1,5 @@
 package sonnicon.eonbot.command.CmdArgs
 
-
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 

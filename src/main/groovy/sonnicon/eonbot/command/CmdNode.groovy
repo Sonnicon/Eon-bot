@@ -2,6 +2,7 @@ package sonnicon.eonbot.command
 
 import sonnicon.eonbot.command.CmdArgs.CmdArg
 import sonnicon.eonbot.command.CmdArgs.CmdArgBranch
+import sonnicon.eonbot.command.CmdArgs.CmdArgLongString
 import sonnicon.eonbot.command.CmdArgs.CmdArgString
 
 class CmdNode {
@@ -12,6 +13,7 @@ class CmdNode {
 
     static Map<String, Class<? extends CmdArg>> childTypes = [
             "string": CmdArgString.class,
+            "longstring": CmdArgLongString.class,
             "branch": CmdArgBranch.class
     ]
 
