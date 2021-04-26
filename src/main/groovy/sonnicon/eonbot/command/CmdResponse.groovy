@@ -4,12 +4,12 @@ class CmdResponse {
     CmdResponseType type = CmdResponseType.success
     Closure executor
 
-    CmdResponse set(CmdResponseType type){
+    CmdResponse set(CmdResponseType type) {
         this.type = type
         return this
     }
 
-    CmdResponse set(Closure executor){
+    CmdResponse set(Closure executor) {
         this.executor = executor
         return this
     }
@@ -17,6 +17,7 @@ class CmdResponse {
     static enum CmdResponseType {
         missingArg,
         illegalArg,
+        extraArg,
         success
     }
 }

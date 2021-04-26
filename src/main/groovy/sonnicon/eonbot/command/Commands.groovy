@@ -6,12 +6,12 @@ import sonnicon.eonbot.core.EventHandler
 import sonnicon.eonbot.type.EventType
 
 class Commands {
-    protected static final String prefix = '##'
+    protected static final String PREFIX = '##'
     static final char[] quoteChars = ['"', '\'', '`', '“', '”', '’', '’'] as char[]
 
     protected static Closure messageListener = { MessageReceivedEvent event ->
-        if (!event.author.isBot() && event.message.getContentRaw().startsWith(prefix)) {
-            handleCommand(event.message.getContentRaw().substring(prefix.length()), event.message as Message)
+        if (!event.author.isBot() && event.message.getContentRaw().startsWith(PREFIX)) {
+            handleCommand(event.message.getContentRaw().substring(PREFIX.length()), event.message as Message)
         }
     }
 
@@ -25,23 +25,34 @@ class Commands {
 
         CmdNode command = CommandRegistry.commands.get(split.remove(0))
         if (!command) {
-            if (message) message.reply("Command not found").queue()
-            else println("Command not found")
+            if (message) {
+                message.reply("Command not found").queue()
+                message.addReaction("").queue()
+            } else println("Command not found")
             return
         }
 
         CmdResponse response = new CmdResponse()
         command.collect(response, split, parsed)
-        if (response.type == CmdResponse.CmdResponseType.success) {
-            response.executor.call(parsed, message)
-        } else if (message) {
-            message.reply(response.type.name()).queue()
-        } else {
-            println(response.type.name())
+        boolean success = response.type == CmdResponse.CmdResponseType.success
+        if (success) response.executor.call(parsed, message)
+        reply(success ? null : response.type.name(), message, success)
+    }
+
+    protected static void reply(String string, Message message, boolean reaction) {
+        if (string) {
+            if (message) {
+                message.reply(string).queue()
+            } else {
+                println(string)
+            }
+        }
+        if (message) {
+            message.addReaction(reaction ? '✅' : '❎').queue()
         }
     }
 
-    static List<String> split(String text) {
+    protected static List<String> split(String text) {
         String[] splinput = text.split(" ")
         List<String> out = []
         StringJoiner joiner = new StringJoiner(" ")

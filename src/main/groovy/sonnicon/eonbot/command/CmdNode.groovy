@@ -38,6 +38,8 @@ class CmdNode {
                 response.set(CmdResponse.CmdResponseType.illegalArg)
             } else if (next) {
                 next.collect(response, data, parsed)
+            } else if (data) {
+                response.set(CmdResponse.CmdResponseType.extraArg)
             }
         }
     }
