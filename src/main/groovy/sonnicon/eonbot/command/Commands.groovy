@@ -25,10 +25,7 @@ class Commands {
 
         CmdNode command = CommandRegistry.commands.get(split.remove(0))
         if (!command) {
-            if (message) {
-                message.reply("Command not found").queue()
-                message.addReaction("").queue()
-            } else println("Command not found")
+            reply("Command not found.", message, false)
             return
         }
 

@@ -1,16 +1,20 @@
 ---
 commands:
-  load:
+  modules:
     childData:
-      type: "string"
-      regex: ".*"
-      name: "name"
-    executorKey: "load"
-  unload:
-    childData:
-      type: "string"
-      regex: ".*"
-      name: "name"
-    executorKey: "unload"
-  loaded:
-    executorKey: "loaded"
+      type: "branch"
+      childs:
+        load:
+          childData:
+            type: "string"
+            regex: ".*"
+            name: "name"
+          executorKey: "load"
+        unload:
+          childData:
+            type: "string"
+            regex: ".*"
+            name: "name"
+          executorKey: "unload"
+        loaded:
+          executorKey: "loaded"
