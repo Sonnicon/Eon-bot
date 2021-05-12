@@ -1,0 +1,53 @@
+---
+commands:
+  perms:
+    uid: "perms"
+    childData:
+      type: "branch"
+      name: "entityType"
+      childs:
+        globaluser:
+          uid: "globaluser"
+          childData:
+            type: "user"
+            name: "entity"
+        group:
+          uid: "group"
+          childData:
+            type: "string"
+            regex: "^[a-zA-Z]+$"
+            name: "entity"
+        user:
+          uid: "user"
+          childData:
+            type: "user"
+            name: "entity"
+        role:
+          uid: "role"
+          childData:
+            type: "role"
+            name: "entity"
+    next:
+      uid: "target"
+      childData:
+        type: "string"
+        regex: "^[a-zA-Z\\-]+$"
+        name: "target"
+      next:
+        uid: "operation"
+        childData:
+          type: "branch"
+          name: "operation"
+          childs:
+            get:
+              uid: "get"
+              executorKey: "get"
+            set:
+              uid: "set"
+              executorKey: "set"
+              childData:
+                type: "boolean"
+                name: "value"
+            drop:
+              uid: "drop"
+              executorKey: "drop"

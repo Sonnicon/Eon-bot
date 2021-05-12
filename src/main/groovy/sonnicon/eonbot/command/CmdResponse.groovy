@@ -18,6 +18,7 @@ class CmdResponse {
         missingArg,
         illegalArg,
         extraArg,
+        badPermission,
         success
     }
 }

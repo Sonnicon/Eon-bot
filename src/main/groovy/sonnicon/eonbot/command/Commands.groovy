@@ -30,7 +30,7 @@ class Commands {
         }
 
         CmdResponse response = new CmdResponse()
-        command.collect(response, split, parsed)
+        command.collect(response, split, parsed, message)
         boolean success = response.type == CmdResponse.CmdResponseType.success
         if (success) response.executor.call(parsed, message)
         reply(success ? null : response.type.name(), message, success)

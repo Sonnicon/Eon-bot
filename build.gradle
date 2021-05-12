@@ -8,6 +8,7 @@ mainClassName = 'sonnicon.eonbot.Eonbot'
 
 repositories {
     jcenter()
+    mavenCentral()
     maven {
         url "https://jitpack.io"
     }
@@ -22,6 +23,7 @@ dependencies {
     implementation('net.dv8tion:JDA:4.2.0_249'){
         exclude module: 'opus-java'
     }
+    compile 'org.mongodb:mongodb-driver-sync:4.2.3'
 }
 
 task uberjar(type: Jar) {

@@ -15,9 +15,11 @@ class CommandRegistry {
     }
 
     static Map<String, Closure> executorMap
+    static String name
 
     static void loadMap(Map<String, CmdNode> map, String name = null, Map<String, Closure> executorMap = null) {
         this.executorMap = executorMap
+        this.name = name
         map.each {
             commands.put(it.key, it.value as CmdNode)
             // beautiful

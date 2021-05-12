@@ -1,10 +1,12 @@
 ---
 commands:
   echo:
+    uid: "echo"
+    executorKey: "echo"
     childData:
       type: "longstring"
-      regex: ".*"
+      regex: "^.+$"
       name: "text"
-    executorKey: "echo"
 dependencies:
   - "modules"
+  - "permissions"

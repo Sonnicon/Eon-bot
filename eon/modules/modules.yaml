@@ -1,20 +1,24 @@
 ---
 commands:
   modules:
+    uid: "modules"
     childData:
       type: "branch"
       childs:
         load:
-          childData:
-            type: "string"
-            regex: ".*"
-            name: "name"
+          uid: "load"
           executorKey: "load"
-        unload:
           childData:
             type: "string"
-            regex: ".*"
+            regex: "^.+$"
             name: "name"
+        unload:
+          uid: "unload"
           executorKey: "unload"
+          childData:
+            type: "string"
+            regex: "^.+$"
+            name: "name"
         loaded:
+          uid: "loaded"
           executorKey: "loaded"
