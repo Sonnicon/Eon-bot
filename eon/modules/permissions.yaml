@@ -7,47 +7,107 @@ commands:
       name: "entityType"
       childs:
         globaluser:
-          uid: "globaluser"
+          uid: "perms-globaluser"
           childData:
             type: "user"
             name: "entity"
         group:
-          uid: "group"
+          uid: "perms-group"
           childData:
             type: "string"
             regex: "^[a-zA-Z]+$"
             name: "entity"
         user:
-          uid: "user"
+          uid: "perms-user"
           childData:
             type: "user"
             name: "entity"
         role:
-          uid: "role"
+          uid: "perms-role"
           childData:
             type: "role"
             name: "entity"
     next:
-      uid: "target"
+      uid: "perms-target"
       childData:
         type: "string"
         regex: "^[a-zA-Z\\-]+$"
         name: "target"
       next:
-        uid: "operation"
+        uid: "perms-operation"
         childData:
           type: "branch"
           name: "operation"
           childs:
             get:
-              uid: "get"
-              executorKey: "get"
+              uid: "perms-get"
+              executorKey: "perms-get"
             set:
-              uid: "set"
-              executorKey: "set"
+              uid: "perms-set"
+              executorKey: "perms-set"
               childData:
                 type: "boolean"
                 name: "value"
             drop:
-              uid: "drop"
-              executorKey: "drop"
+              uid: "perms-drop"
+              executorKey: "perms-drop"
+  group:
+    uid: "group-operation"
+    childData:
+      type: "branch"
+      name: "operation"
+      childs:
+        create:
+          uid: "group-create"
+          executorKey: "group-create"
+          childData:
+            type: "string"
+            regex: "^[a-zA-Z]+$"
+            name: "name"
+        delete:
+          uid: "group-delete"
+          executorKey: "group-delete"
+          childData:
+            type: "string"
+            regex: "^[a-zA-Z]+$"
+            name: "name"
+        add:
+          uid: "group-add"
+          executorKey: "group-add"
+          childData:
+            type: "string"
+            regex: "^[a-zA-Z]+$"
+            name: "name"
+          next:
+            childData:
+              type: "user"
+              name: "entity"
+        remove:
+          uid: "group-remove"
+          executorKey: "group-remove"
+          childData:
+            type: "string"
+            regex: "^[a-zA-Z]+$"
+            name: "target"
+          next:
+            childData:
+              type: "user"
+              name: "entity"
+        get:
+          uid: "group-get"
+          executorKey: "group-get"
+          childData:
+            type: "branch"
+            name: "entityType"
+            childs:
+              user:
+                uid: "group-get-user"
+                childData:
+                  type: "user"
+                  name: "entity"
+              group:
+                uid: "group-get-group"
+                childData:
+                  type: "string"
+                  regex: "^[a-zA-Z]+$"
+                  name: "entity"

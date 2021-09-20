@@ -3,7 +3,7 @@ package sonnicon.eonbot.core
 class Config {
     String token = "Token goes here"
     String mongodbAddress = "mongodb://localhost:27017"
-    String mongodbName = "discord_eon-bot"
+    String mongodbName = "discord_eonbot"
 
     static Config getConfig() {
         File file = FileIO.FileType.config.file

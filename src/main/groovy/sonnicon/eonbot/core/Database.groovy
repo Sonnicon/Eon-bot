@@ -8,6 +8,7 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.ReplaceOptions
 import org.bson.Document
+import org.bson.types.ObjectId
 import sonnicon.eonbot.Eonbot
 
 class Database {
@@ -38,10 +39,18 @@ class Database {
     static Document getUser(long user, long guild) {
         Document d = cUsers.find(Filters.and(Filters.eq("user", user), Filters.eq("guild", guild))).first()
         if (d == null) {
-            d = new Document(["user": user, "guild": guild, "permissions": [:]])
+            d = new Document(["user": user, "guild": guild, "permissions": [:], "groups": []])
             updateUser(d)
         }
         d
+    }
+
+    static Document getUserById(ObjectId id) {
+        Database.cUsers.find(Filters.eq("_id", id)).first()
+    }
+
+    static void updateUser(long user, long guild, Document data) {
+        cUsers.updateOne(Filters.and(Filters.eq("user", user), Filters.eq("guild", guild)), data)
     }
 
     static void updateUser(Document data) {
@@ -49,16 +58,25 @@ class Database {
     }
 
     static Document getGroup(String name) {
-        Document d = cUsers.find(Filters.eq("name", name)).first()
+        Document d = cGroups.find(Filters.eq("name", name)).first()
         if (d == null) {
-            d = new Document(["name": name, "permissions": [:]])
+            d = new Document(["name": name, "permissions": [:], "users": []])
             updateGroup(d)
         }
         d
     }
 
+    static Document getGroupById(ObjectId id) {
+        Database.cGroups.find(Filters.eq("_id", id)).first()
+    }
+
+
+    static void updateGroup(String name, Document data) {
+        cGroups.updateOne(Filters.eq("name", name), data)
+    }
+
     static void updateGroup(Document data) {
-        cUsers.replaceOne(Filters.eq("name", data.get("name")), data, REPLACE_OPTIONS)
+        cGroups.replaceOne(Filters.eq("name", data.get("name")), data, REPLACE_OPTIONS)
     }
 
     static Document getRole(long role) {
@@ -68,6 +86,10 @@ class Database {
             updateRole(d)
         }
         d
+    }
+
+    static void updateRole(long role, Document data) {
+        cGroups.updateOne(Filters.eq("role", role), data)
     }
 
     static void updateRole(Document data) {

@@ -3,6 +3,7 @@ package sonnicon.eonbot.command
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.Role
 import org.bson.Document
+import org.bson.types.ObjectId
 import sonnicon.eonbot.command.CmdArgs.*
 import sonnicon.eonbot.core.Database
 
@@ -77,8 +78,8 @@ class CmdNode {
                 return (x.get("permissions") as Map).get(id)
             }
             if (x.containsKey("groups")) {
-                for (String group : x.get("groups")) {
-                    x = Database.getGroup(group)
+                for (ObjectId group : x.get("groups")) {
+                    x = Database.getGroupById(group)
                     if (x && (x.get("permissions") as Map).containsKey(id)) {
                         return (x.get("permissions") as Map).get(id)
                     }
