@@ -43,8 +43,8 @@ class ModulePermissions extends Modules.ModuleBase {
 
         }, "perms-set" : { data, message ->
             var entity = data.get("entity")
-            String target = data.get("target")
-            Document doc
+            Document doc = new Document("\$set",
+                    new Document().append("permissions.${data.get("target")}", data.get("value")))
             long guild = 0
 
             switch (data.get("entityType")) {
@@ -54,26 +54,23 @@ class ModulePermissions extends Modules.ModuleBase {
                         return
                     }
                     guild = message.guild.idLong
+
                 case ("globaluser"):
-                    doc = Database.getUser(entity, guild)
-                    doc.get("permissions").put(target, data.get("value"))
-                    Database.updateUser(doc)
+                    Database.updateUser(entity, guild, doc)
                     break
+
                 case ("group"):
-                    doc = Database.getGroup(entity)
-                    doc.get("permissions").put(target, data.get("value"))
-                    Database.updateGroup(doc)
+                    Database.updateGroup(entity, doc)
                     break
+
                 case ("role"):
-                    doc = Database.getRole(entity)
-                    doc.get("permissions").put(target, data.get("value"))
-                    Database.updateRole(doc)
+                    Database.updateRole(entity, doc)
                     break
             }
         }, "perms-drop": { data, message ->
             var entity = data.get("entity")
-            String target = data.get("target")
-            Document doc
+            Document doc = new Document("\$unset",
+                    new Document().append("permissions.${data.get("target")}", ""))
             long guild = 0
 
             switch (data.get("entityType")) {
@@ -83,39 +80,41 @@ class ModulePermissions extends Modules.ModuleBase {
                         return
                     }
                     guild = message.guild.idLong
+
                 case ("globaluser"):
-                    doc = Database.getUser(entity, guild)
-                    doc.get("permissions").remove(target)
-                    Database.updateUser(doc)
+                    Database.updateUser(entity, guild, doc)
                     break
+
                 case ("group"):
-                    doc = Database.getGroup(entity)
-                    doc.get("permissions").remove(target)
-                    Database.updateGroup(doc)
+                    Database.updateGroup(entity, doc)
                     break
+
                 case ("role"):
-                    doc = Database.getRole(entity)
-                    doc.get("permissions").remove(target)
                     Database.updateRole(doc)
                     break
             }
+
         }, "group-create" : { data, message ->
             Database.getGroup(data.get("name"))
+
         }, "group-delete" : { data, message ->
             Database.cGroups.deleteOne(Filters.eq("name", data.get("name")))
 
         }, "group-add" : { data, message ->
             Document docGroup = Database.getGroup(data.get("name"))
             Document docUser = Database.getUser(data.get("entity"))
-            docGroup.get("users").push(docUser.get("_id"))
-            docUser.get("groups").push(docGroup.get("_id"))
-            Database.updateGroup(docGroup)
-            Database.updateUser(docUser)
+            Database.updateGroup(data.get("target"),
+                    new Document("\$push", new Document().append("users", docUser.get("_id"))))
+            Database.updateUser(data.get("entity"), 0,
+                    new Document("\$push", new Document().append("groups", docGroup.get("_id"))))
+
         }, "group-remove" : { data, message ->
             Document docGroup = Database.getGroup(data.get("target"))
             Document docUser = Database.getUser(data.get("entity"))
-            Database.updateGroup(data.get("target"), new Document("\$pull", new Document().append("users", docUser.get("_id"))))
-            Database.updateUser(data.get("entity"), 0, new Document("\$pull", new Document().append("groups", docGroup.get("_id"))))
+            Database.updateGroup(data.get("target"),
+                    new Document("\$pull", new Document().append("users", docUser.get("_id"))))
+            Database.updateUser(data.get("entity"), 0,
+                    new Document("\$pull", new Document().append("groups", docGroup.get("_id"))))
 
         }, "group-get" : { data, message ->
             var entity = data.get("entity")
