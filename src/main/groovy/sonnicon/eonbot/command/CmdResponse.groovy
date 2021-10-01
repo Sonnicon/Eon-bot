@@ -2,14 +2,14 @@ package sonnicon.eonbot.command
 
 class CmdResponse {
     CmdResponseType type = CmdResponseType.success
-    Closure executor
+    Closure<Boolean> executor
 
     CmdResponse set(CmdResponseType type) {
         this.type = type
         return this
     }
 
-    CmdResponse set(Closure executor) {
+    CmdResponse set(Closure<Boolean> executor) {
         this.executor = executor
         return this
     }

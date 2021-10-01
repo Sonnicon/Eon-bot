@@ -17,6 +17,8 @@ class Database {
 
     static MongoCollection<Document> cUsers, cGroups, cRoles
 
+    static final ReplaceOptions OPTIONS_UPSERT = new ReplaceOptions(["upsert": true])
+
     static {
         client = MongoClients.create(Eonbot.config.mongodbAddress)
         database = client.getDatabase(Eonbot.config.mongodbName)
@@ -28,19 +30,17 @@ class Database {
         cUsers.createIndex(Indexes.compoundIndex(Indexes.ascending("user"), Indexes.ascending("guild")))
         cGroups.createIndex(Indexes.ascending("name"))
         cRoles.createIndex(Indexes.ascending("role"))
+
+        createGroup("everyone")
     }
 
-    static final ReplaceOptions REPLACE_OPTIONS = new ReplaceOptions(["upsert": true])
+    // User
 
-    static Document getUser(long user) {
-        getUser(user, 0)
-    }
-
-    static Document getUser(long user, long guild) {
+    static Document getUser(long user, long guild = 0) {
         Document d = cUsers.find(Filters.and(Filters.eq("user", user), Filters.eq("guild", guild))).first()
-        if (d == null) {
+        if (!d) {
             d = new Document(["user": user, "guild": guild, "permissions": [:], "groups": []])
-            updateUser(d)
+            replaceUser(d)
         }
         d
     }
@@ -53,17 +53,22 @@ class Database {
         cUsers.updateOne(Filters.and(Filters.eq("user", user), Filters.eq("guild", guild)), data)
     }
 
-    static void updateUser(Document data) {
-        cUsers.replaceOne(Filters.and(Filters.eq("user", data.get("user")), Filters.eq("guild", data.get("guild"))), data, REPLACE_OPTIONS)
+    static void replaceUser(Document data) {
+        cUsers.replaceOne(Filters.and(Filters.eq("user", data.get("user")), Filters.eq("guild", data.get("guild"))), data, OPTIONS_UPSERT)
     }
+
+    // Group
 
     static Document getGroup(String name) {
         Document d = cGroups.find(Filters.eq("name", name)).first()
-        if (d == null) {
-            d = new Document(["name": name, "permissions": [:], "users": []])
-            updateGroup(d)
-        }
+
         d
+    }
+
+    static void createGroup(String name) {
+        if (!getGroup(name)) {
+            replaceGroup(new Document(["name": name, "permissions": [:], "users": []]))
+        }
     }
 
     static Document getGroupById(ObjectId id) {
@@ -75,15 +80,17 @@ class Database {
         cGroups.updateOne(Filters.eq("name", name), data)
     }
 
-    static void updateGroup(Document data) {
-        cGroups.replaceOne(Filters.eq("name", data.get("name")), data, REPLACE_OPTIONS)
+    static void replaceGroup(Document data) {
+        cGroups.replaceOne(Filters.eq("name", data.get("name")), data, OPTIONS_UPSERT)
     }
+
+    // Role
 
     static Document getRole(long role) {
         Document d = cRoles.find(Filters.eq("role", role)).first()
-        if (d == null) {
+        if (!d) {
             d = new Document(["role": role, "permissions": [:]])
-            updateRole(d)
+            replaceRole(d)
         }
         d
     }
@@ -92,7 +99,7 @@ class Database {
         cGroups.updateOne(Filters.eq("role", role), data)
     }
 
-    static void updateRole(Document data) {
-        cRoles.replaceOne(Filters.eq("role", data.get("role")), data, REPLACE_OPTIONS)
+    static void replaceRole(Document data) {
+        cRoles.replaceOne(Filters.eq("role", data.get("role")), data, OPTIONS_UPSERT)
     }
 }

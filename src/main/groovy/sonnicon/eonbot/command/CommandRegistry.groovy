@@ -14,10 +14,10 @@ class CommandRegistry {
         moduleCommands.values().each { it.remove(name) }
     }
 
-    static Map<String, Closure> executorMap
+    static Map<String, Closure<Boolean>> executorMap
     static String name
 
-    static void loadMap(Map<String, CmdNode> map, String name = null, Map<String, Closure> executorMap = null) {
+    static void loadMap(Map<String, CmdNode> map, String name = null, Map<String, Closure<Boolean>> executorMap = null) {
         this.executorMap = executorMap
         this.name = name
         map.each {

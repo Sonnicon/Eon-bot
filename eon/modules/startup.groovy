@@ -18,6 +18,7 @@ class ModuleStartup extends ModuleBase {
         ["echo": { data, message ->
             if (message) message.reply(data["text"]).queue()
             else println data["text"]
+            true
         }]
     }
 

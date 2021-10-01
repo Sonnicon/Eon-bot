@@ -11,7 +11,7 @@ class CmdNode {
     // core node data
     CmdArg child
     CmdNode next
-    Closure executor
+    Closure<Boolean> executor
     boolean required = true
     String id
 
@@ -43,8 +43,9 @@ class CmdNode {
     }
 
     void collect(CmdResponse response, List<String> data, Map<String, ?> parsed, Message message) {
+        if (!message) return
         // check permissions
-        if (message && !checkPermissions(message.author.idLong, message.isFromGuild() ? message.guild.idLong : 0, message.isFromGuild() ? message.member.getRoles() + message.guild.publicRole : null)) {
+        if (!checkPermissions(message.author.idLong, message.isFromGuild() ? message.guild.idLong : 0, message.isFromGuild() ? message.member.getRoles() + message.guild.publicRole : null)) {
             response.set(CmdResponse.CmdResponseType.badPermission)
             return
         }
@@ -72,11 +73,15 @@ class CmdNode {
     }
 
     protected boolean checkPermissions(long author, long guild, List<Role> roles) {
+        // Global
         Document x = Database.getUser(author, 0)
         if (x) {
+            // User global
             if ((x.get("permissions") as Map).containsKey(id)) {
                 return (x.get("permissions") as Map).get(id)
             }
+
+            // Group
             if (x.containsKey("groups")) {
                 for (ObjectId group : x.get("groups")) {
                     x = Database.getGroupById(group)
@@ -85,11 +90,24 @@ class CmdNode {
                     }
                 }
             }
+
+            // Everyone group
+            x = Database.getGroup("everyone")
+            if (x.containsKey("permissions")) {
+                Map permissions = x.get("permissions")
+                if (permissions.containsKey(id)) {
+                    return permissions.get(id)
+                }
+            }
         }
+
+        // User guild
         x = Database.getUser(author, guild)
         if (x && (x.get("permissions") as Map).containsKey(id)) {
             return (x.get("permissions") as Map).get(id)
         }
+
+        // Role guild
         if (guild != 0) {
             for (Role role : roles) {
                 x = Database.getRole(role.idLong)
