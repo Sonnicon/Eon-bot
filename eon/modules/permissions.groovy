@@ -1,5 +1,6 @@
 import com.mongodb.client.model.Filters
 import org.bson.Document
+import sonnicon.eonbot.command.Commands
 import sonnicon.eonbot.core.Database
 import sonnicon.eonbot.core.Modules
 
@@ -43,6 +44,13 @@ class ModulePermissions extends Modules.ModuleBase {
             false
 
         }, "perms-set"   : { data, message ->
+            if (!Commands.checkPermissions(message, data.get("target"))) {
+                if (message && !message.isFromGuild()) {
+                    message.reply("Cannot set permissions you do not have.").queue()
+                }
+                return false
+            }
+
             var entity = data.get("entity")
             Document doc = new Document("\$set",
                     new Document().append("permissions.${data.get("target")}", data.get("value")))
@@ -74,6 +82,12 @@ class ModulePermissions extends Modules.ModuleBase {
 
             true
         }, "perms-drop"  : { data, message ->
+            if (!Commands.checkPermissions(message, data.get("target"))) {
+                if (message && !message.isFromGuild()) {
+                    message.reply("Cannot drop permissions you do not have.").queue()
+                }
+                return false
+            }
             var entity = data.get("entity")
             Document doc = new Document("\$unset",
                     new Document().append("permissions.${data.get("target")}", ""))

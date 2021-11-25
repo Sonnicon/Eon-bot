@@ -20,10 +20,10 @@ repositories {
 
 dependencies {
     implementation 'org.apache.groovy:groovy-yaml:4.0.0-alpha-2'
-    implementation('net.dv8tion:JDA:4.2.0_249'){
+    implementation('net.dv8tion:JDA:4.3.0_277'){
         exclude module: 'opus-java'
     }
-    compile 'org.mongodb:mongodb-driver-sync:4.2.3'
+    compile 'org.mongodb:mongodb-driver-sync:4.4.0'
 }
 
 task uberjar(type: Jar) {

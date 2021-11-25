@@ -1,7 +1,13 @@
 package sonnicon.eonbot.command
 
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import org.bson.Document
+import org.bson.types.ObjectId
+import sonnicon.eonbot.core.Database
 import sonnicon.eonbot.core.EventHandler
 import sonnicon.eonbot.type.EventType
 
@@ -33,6 +39,60 @@ class Commands {
         command.collect(response, split, parsed, message)
         boolean success = response.type == CmdResponse.CmdResponseType.success
         reply(success ? null : response.type.name(), message, success && response.executor.call(parsed, message))
+    }
+
+    static boolean checkPermissions(Message message, String commandid){
+        return checkPermissions(message.getAuthor().getIdLong(),
+                message.isFromGuild() ? message.getGuild().getIdLong() : 0,
+                message.isFromGuild() ? message.getMember().getRoles() + message.getGuild().getPublicRole() : null,
+                commandid)
+    }
+
+    static boolean checkPermissions(long author, long guild, List<Role> roles, String commandid) {
+        // Global
+        Document x = Database.getUser(author, 0)
+        if (x) {
+            // User global
+            if ((x.get("permissions") as Map).containsKey(commandid)) {
+                return (x.get("permissions") as Map).get(commandid)
+            }
+
+            // Group
+            if (x.containsKey("groups")) {
+                for (ObjectId group : x.get("groups")) {
+                    x = Database.getGroupById(group)
+                    if (x && (x.get("permissions") as Map).containsKey(commandid)) {
+                        return (x.get("permissions") as Map).get(commandid)
+                    }
+                }
+            }
+
+            // Everyone group
+            x = Database.getGroup("everyone")
+            if (x.containsKey("permissions")) {
+                Map permissions = x.get("permissions")
+                if (permissions.containsKey(commandid)) {
+                    return permissions.get(commandid)
+                }
+            }
+        }
+
+        // User guild
+        x = Database.getUser(author, guild)
+        if (x && (x.get("permissions") as Map).containsKey(commandid)) {
+            return (x.get("permissions") as Map).get(commandid)
+        }
+
+        // Role guild
+        if (guild != 0) {
+            for (Role role : roles) {
+                x = Database.getRole(role.idLong)
+                if (x && (x.get("permissions") as Map).containsKey(commandid)) {
+                    return (x.get("permissions") as Map).get(commandid)
+                }
+            }
+        }
+        true
     }
 
     protected static void reply(String string, Message message, boolean reaction) {
