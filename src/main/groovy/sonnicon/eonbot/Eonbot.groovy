@@ -16,7 +16,7 @@ class Eonbot {
     static Commands commands = new Commands()
 
     static void main(String[] args) {
-        jda = new JDABuilder(config.getToken())
+        jda = JDABuilder.createDefault(config.getToken())
                 .addEventListeners(new EventHandler())
                 .build()
     }
