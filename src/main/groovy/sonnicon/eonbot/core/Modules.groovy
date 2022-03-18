@@ -1,8 +1,8 @@
 package sonnicon.eonbot.core
 
-
 import sonnicon.eonbot.command.CmdNode
 import sonnicon.eonbot.command.CommandRegistry
+import sonnicon.eonbot.type.ExecutorFunc
 
 class Modules {
     static protected GroovyScriptEngine groovyScriptEngine
@@ -46,8 +46,17 @@ class Modules {
             ModuleBase mod = groovyScriptEngine.run(filename, binding) as ModuleBase
             loadedModules.put(name, mod)
             // load commands
-            if (yaml && yaml.containsKey("commands"))
-                CommandRegistry.loadMap(yaml.get("commands") as Map<String, CmdNode>, name, mod.getExecutorMap())
+            if (yaml && yaml.containsKey("commands")) {
+                // Get all methods with ExecutorFunc into a map with the key and a reference to method
+                Map<String, Closure<Boolean>> executorMap = mod.class.getDeclaredMethods().iterator().findAll {
+                    it.getAnnotation(ExecutorFunc)
+                }.collectEntries {
+                    [it.getAnnotation(ExecutorFunc).value(), mod.&"$it.name"]
+                }
+
+                CommandRegistry.loadMap(yaml.get("commands") as Map<String, CmdNode>, name, executorMap)
+            }
+
             mod.load()
             println "Loaded module " + name
             mod
@@ -88,8 +97,6 @@ class Modules {
         void load() {}
 
         void unload() {}
-
-        static Map<String, Closure> getExecutorMap() { null }
 
         @Override
         Object run() {
