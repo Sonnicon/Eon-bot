@@ -9,7 +9,7 @@ class modules extends Modules.ModuleBase {
     @ExecutorFunc("load")
     boolean loadModule(Map<String, ?> data, Message message) {
         String response
-        if (Modules.load(data["name"], true)) {
+        if (Modules.load(data["name"] as String, true)) {
             response = "Loaded module"
             if (message) message.reply(response).queue()
             else println(response)
@@ -25,7 +25,7 @@ class modules extends Modules.ModuleBase {
     @ExecutorFunc("unload")
     boolean unloadModule(Map<String, ?> data, Message message) {
         String response
-        if (Modules.unload(data["name"])) {
+        if (Modules.unload(data["name"] as String)) {
             response = "Unloaded module"
             if (message) message.reply(response).queue()
             else println(response)

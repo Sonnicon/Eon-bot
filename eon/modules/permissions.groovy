@@ -1,6 +1,7 @@
 import com.mongodb.client.model.Filters
 import net.dv8tion.jda.api.entities.Message
 import org.bson.Document
+import org.bson.types.ObjectId
 import sonnicon.eonbot.command.Commands
 import sonnicon.eonbot.core.Database
 import sonnicon.eonbot.core.Modules
@@ -24,21 +25,25 @@ class permissions extends Modules.ModuleBase {
                     return false
                 }
                 guild = message.guild.idLong
+
             case ("globaluser"):
-                doc = Database.getUser(entity, guild)
+                doc = Database.getUser(entity as long, guild)
                 break
+
             case ("group"):
-                doc = Database.getGroup(entity)
+                doc = Database.getGroup(entity as String)
                 break
+
             case ("role"):
-                doc = Database.getRole(entity)
+                doc = Database.getRole(entity as long)
                 break
+
             default:
                 return false
         }
 
-        if (doc && doc.containsKey("permissions") && doc.get("permissions").containsKey(target)) {
-            message.reply(doc.get("permissions").get(target).toString()).queue()
+        if (doc && doc.containsKey("permissions") && (doc.get("permissions") as Map).containsKey(target)) {
+            message.reply((doc.get("permissions") as Map).get(target).toString()).queue()
             return true
         }
 
@@ -48,7 +53,7 @@ class permissions extends Modules.ModuleBase {
 
     @ExecutorFunc("perms-set")
     boolean permsSet(Map<String, ?> data, Message message) {
-        if (!Commands.checkPermissions(message, data.get("target"))) {
+        if (!Commands.checkPermissions(message, data.get("target") as String)) {
             if (message && !message.isFromGuild()) {
                 message.reply("Cannot set permissions you do not have.").queue()
             }
@@ -69,15 +74,15 @@ class permissions extends Modules.ModuleBase {
                 guild = message.guild.idLong
 
             case ("globaluser"):
-                Database.updateUser(entity, guild, doc)
+                Database.updateUser(entity as long, guild, doc)
                 break
 
             case ("group"):
-                Database.updateGroup(entity, doc)
+                Database.updateGroup(entity as String, doc)
                 break
 
             case ("role"):
-                Database.updateRole(entity, doc)
+                Database.updateRole(entity as long, doc)
                 break
 
             default:
@@ -90,7 +95,7 @@ class permissions extends Modules.ModuleBase {
 
     @ExecutorFunc("perms-drop")
     boolean permsDrop(Map<String, ?> data, Message message) {
-        if (!Commands.checkPermissions(message, data.get("target"))) {
+        if (!Commands.checkPermissions(message, data.get("target") as String)) {
             if (message) {
                 message.reply("Cannot drop permissions you do not have.").queue()
             }
@@ -98,7 +103,8 @@ class permissions extends Modules.ModuleBase {
         }
         var entity = data.get("entity")
         Document doc = new Document("\$unset",
-                new Document().append("permissions.${data.get("target")}", ""))
+                new Document().append("permissions.${data.get("target")}", "")
+        )
         long guild = 0
 
         switch (data.get("entityType")) {
@@ -110,11 +116,11 @@ class permissions extends Modules.ModuleBase {
                 guild = message.guild.idLong
 
             case ("globaluser"):
-                Database.updateUser(entity, guild, doc)
+                Database.updateUser(entity as long, guild, doc)
                 break
 
             case ("group"):
-                Database.updateGroup(entity, doc)
+                Database.updateGroup(entity as String, doc)
                 break
 
             case ("role"):
@@ -129,7 +135,7 @@ class permissions extends Modules.ModuleBase {
 
     @ExecutorFunc("group-create")
     boolean groupCreate(Map<String, ?> data, Message message) {
-        Database.createGroup(data.get("name"))
+        Database.createGroup(data.get("name") as String)
         true
     }
 
@@ -141,25 +147,37 @@ class permissions extends Modules.ModuleBase {
 
     @ExecutorFunc("group-add")
     boolean groupAdd(Map<String, ?> data, Message message) {
-        Document docGroup = Database.getGroup(data.get("name"))
+        Document docGroup = Database.getGroup(data.get("name") as String)
         if (!docGroup) return false
-        Document docUser = Database.getUser(data.get("entity"))
-        Database.updateGroup(data.get("target"),
-                new Document("\$push", new Document().append("users", docUser.get("_id"))))
-        Database.updateUser(data.get("entity"), 0,
-                new Document("\$push", new Document().append("groups", docGroup.get("_id"))))
+        Document docUser = Database.getUser(data.get("entity") as long)
+        Database.updateGroup(data.get("target") as String,
+                new Document("\$push",
+                        new Document().append("users", docUser.get("_id"))
+                )
+        )
+        Database.updateUser(data.get("entity") as long, 0,
+                new Document("\$push",
+                        new Document().append("groups", docGroup.get("_id"))
+                )
+        )
         true
     }
 
     @ExecutorFunc("group-remove")
     boolean groupRemove(Map<String, ?> data, Message message) {
-        Document docGroup = Database.getGroup(data.get("target"))
+        Document docGroup = Database.getGroup(data.get("target") as String)
         if (!docGroup) return false
-        Document docUser = Database.getUser(data.get("entity"))
-        Database.updateGroup(data.get("target"),
-                new Document("\$pull", new Document().append("users", docUser.get("_id"))))
-        Database.updateUser(data.get("entity"), 0,
-                new Document("\$pull", new Document().append("groups", docGroup.get("_id"))))
+        Document docUser = Database.getUser(data.get("entity") as long)
+        Database.updateGroup(data.get("target") as String,
+                new Document("\$pull",
+                        new Document().append("users", docUser.get("_id"))
+                )
+        )
+        Database.updateUser(data.get("entity") as long, 0,
+                new Document("\$pull",
+                        new Document().append("groups", docGroup.get("_id"))
+                )
+        )
         true
     }
 
@@ -170,14 +188,18 @@ class permissions extends Modules.ModuleBase {
 
         switch (data.get("entityType")) {
             case ("user"):
-                doc = Database.getUser(entity)
-                List groups = doc.get("groups").collect { Database.getGroupById(it).get("name") }
+                doc = Database.getUser(entity as long)
+                List groups = doc.get("groups").collect {
+                    Database.getGroupById(it as ObjectId).get("name")
+                }
                 message.reply("Found `${groups.size()}` groups: ```${groups.join(", ")}```").queue()
                 break
 
             case ("group"):
-                doc = Database.getGroup(entity)
-                List users = doc.get("users").collect { Database.getUserById(it).get("user") }
+                doc = Database.getGroup(entity as String)
+                List users = doc.get("users").collect {
+                    Database.getUserById(it as ObjectId).get("user")
+                }
                 message.reply("Found `${users.size()}` users: ```${users.join(", ")} ```").queue()
                 break
 
