@@ -6,7 +6,7 @@ import sonnicon.eonbot.core.Database
 import sonnicon.eonbot.core.Modules
 import sonnicon.eonbot.type.ExecutorFunc
 
-class ModulePermissions extends Modules.ModuleBase {
+class permissions extends Modules.ModuleBase {
 
     void load() {}
 

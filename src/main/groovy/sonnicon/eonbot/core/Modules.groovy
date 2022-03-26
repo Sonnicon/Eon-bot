@@ -4,6 +4,8 @@ import sonnicon.eonbot.command.CmdNode
 import sonnicon.eonbot.command.CommandRegistry
 import sonnicon.eonbot.type.ExecutorFunc
 
+import java.lang.reflect.Method
+
 class Modules {
     static protected GroovyScriptEngine groovyScriptEngine
     static protected Binding binding = new Binding()
@@ -48,9 +50,9 @@ class Modules {
             // load commands
             if (yaml && yaml.containsKey("commands")) {
                 // Get all methods with ExecutorFunc into a map with the key and a reference to method
-                Map<String, Closure<Boolean>> executorMap = mod.class.getDeclaredMethods().iterator().findAll {
+                Map<String, Closure<Boolean>> executorMap = (mod.class.getDeclaredMethods().iterator().findAll {
                     it.getAnnotation(ExecutorFunc)
-                }.collectEntries {
+                } as Iterator<Method>).collectEntries { Method it ->
                     [it.getAnnotation(ExecutorFunc).value(), mod.&"$it.name"]
                 }
 

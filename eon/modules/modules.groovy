@@ -2,7 +2,7 @@ import net.dv8tion.jda.api.entities.Message
 import sonnicon.eonbot.core.Modules
 import sonnicon.eonbot.type.ExecutorFunc
 
-class ModuleStartup extends Modules.ModuleBase {
+class modules extends Modules.ModuleBase {
 
     void load() {}
 

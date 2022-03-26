@@ -7,7 +7,6 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import sonnicon.eonbot.core.Database
 import sonnicon.eonbot.core.EventHandler
-import sonnicon.eonbot.type.EventType
 
 class Commands {
     protected static final String PREFIX = '##'
@@ -20,7 +19,7 @@ class Commands {
     }
 
     static {
-        EventHandler.register(EventType.onMessageReceived, messageListener)
+        EventHandler.register(MessageReceivedEvent.class, messageListener)
     }
 
     static void handleCommand(String string, Message message = null) {
@@ -57,7 +56,7 @@ class Commands {
 
             // Group
             if (x.containsKey("groups")) {
-                for (ObjectId group : x.get("groups")) {
+                for (ObjectId group : (x.get("groups") as List<ObjectId>)) {
                     x = Database.getGroupById(group)
                     if (x && (x.get("permissions") as Map).containsKey(commandid)) {
                         return (x.get("permissions") as Map).get(commandid)
@@ -68,7 +67,7 @@ class Commands {
             // Everyone group
             x = Database.getGroup("everyone")
             if (x.containsKey("permissions")) {
-                Map permissions = x.get("permissions")
+                Map permissions = x.get("permissions") as Map
                 if (permissions.containsKey(commandid)) {
                     return permissions.get(commandid)
                 }

@@ -3,17 +3,16 @@ package sonnicon.eonbot.core
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import org.jetbrains.annotations.NotNull
-import sonnicon.eonbot.type.EventType
 
 import javax.annotation.Nonnull
 
 class EventHandler implements EventListener {
-    static protected Map<EventType, ArrayList<Closure>> events = [:]
+    static protected Map<Class<GenericEvent>, ArrayList<Closure>> events = [:]
 
-    static protected EventType invoking = null
+    static protected Class<GenericEvent> invoking = null
     static protected ArrayList<Closure> toRegister = [], toRemove = []
 
-    static void register(EventType event, Closure closure) {
+    static void register(Class<GenericEvent> event, Closure closure) {
         if (event == invoking) {
             toRegister.add(closure)
         } else {
@@ -22,7 +21,7 @@ class EventHandler implements EventListener {
         }
     }
 
-    static void remove(EventType event, Closure closure) {
+    static void remove(Class<GenericEvent> event, Closure closure) {
         if (event == invoking) {
             toRemove.add(closure)
         } else {
@@ -35,15 +34,13 @@ class EventHandler implements EventListener {
 
     @Override
     void onEvent(@NotNull @Nonnull GenericEvent event) {
-        String className = event.getClass().getSimpleName()
-        EventType type = EventType.valueOf("on" + className.substring(0, className.length() - 5))
-        ArrayList<Closure> list = events.get(type)
+        ArrayList<Closure> list = events.get(event.class)
         if (list != null) {
-            invoking = type
+            invoking = event.class
             list.each { it.call(event) }
             invoking = null
-            toRegister.each { register(type, it) }.clear()
-            toRemove.each { remove(type, it) }.clear()
+            toRegister.each { register(event.class, it) }.clear()
+            toRemove.each { remove(event.class, it) }.clear()
         }
     }
 }
