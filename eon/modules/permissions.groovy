@@ -4,10 +4,10 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import sonnicon.eonbot.command.Commands
 import sonnicon.eonbot.core.Database
-import sonnicon.eonbot.core.Modules
 import sonnicon.eonbot.type.ExecutorFunc
+import sonnicon.eonbot.type.ModuleBase
 
-class permissions extends Modules.ModuleBase {
+class permissions extends ModuleBase {
 
     void load() {}
 

@@ -26,10 +26,18 @@ class Commands {
         ArrayList<String> split = split(string)
         Map<String, ?> parsed = [:]
 
-        CmdNode command = CommandRegistry.commands.get(split.remove(0))
+        CmdNode command = null
+        String keyword = split.remove(0)
+        if (message) {
+            CommandRegistry.commands.get("${message.channelType.toString()}~${message.channel.id}")?.get(keyword)
+        }
+
         if (!command) {
-            reply("Command not found.", message, false)
-            return
+            command = CommandRegistry.commands.get(null)?.get(keyword)
+            if (!command) {
+                reply("Command not found.", message, false)
+                return
+            }
         }
 
         CmdResponse response = new CmdResponse()
@@ -38,7 +46,7 @@ class Commands {
         reply(success ? null : response.type.name(), message, success && response.executor.call(parsed, message))
     }
 
-    static boolean checkPermissions(Message message, String commandid){
+    static boolean checkPermissions(Message message, String commandid) {
         return checkPermissions(message.getAuthor().getIdLong(),
                 message.isFromGuild() ? message.getGuild().getIdLong() : 0,
                 message.isFromGuild() ? message.getMember().getRoles() + message.getGuild().getPublicRole() : null,
@@ -141,5 +149,10 @@ class Commands {
         if (joiner.length() > 0)
             out.add(joiner.toString())
         out
+    }
+
+    static String getContext(Message message) {
+        if (!message) null
+        "${message.channelType.toString()}~${message.channel.id}"
     }
 }

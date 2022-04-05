@@ -1,7 +1,7 @@
 import net.dv8tion.jda.api.events.ReadyEvent
 import sonnicon.eonbot.core.EventHandler
-import sonnicon.eonbot.core.Modules.ModuleBase
 import sonnicon.eonbot.type.ExecutorFunc
+import sonnicon.eonbot.type.ModuleBase
 
 class startup extends ModuleBase {
 

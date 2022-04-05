@@ -1,15 +1,18 @@
 import net.dv8tion.jda.api.entities.Message
+import sonnicon.eonbot.command.Commands
 import sonnicon.eonbot.core.Modules
 import sonnicon.eonbot.type.ExecutorFunc
+import sonnicon.eonbot.type.ModuleBase
 
-class modules extends Modules.ModuleBase {
+//todo this needs big updating
+class modules extends ModuleBase {
 
     void load() {}
 
     @ExecutorFunc("load")
     boolean loadModule(Map<String, ?> data, Message message) {
         String response
-        if (Modules.load(data["name"] as String, true)) {
+        if (Modules.loadModule(data["name"] as String, Commands.getContext(message), true)) {
             response = "Loaded module"
             if (message) message.reply(response).queue()
             else println(response)
@@ -25,7 +28,7 @@ class modules extends Modules.ModuleBase {
     @ExecutorFunc("unload")
     boolean unloadModule(Map<String, ?> data, Message message) {
         String response
-        if (Modules.unload(data["name"] as String)) {
+        if (Modules.unloadModule(data["name"] as String, Commands.getContext(message))) {
             response = "Unloaded module"
             if (message) message.reply(response).queue()
             else println(response)
@@ -40,7 +43,8 @@ class modules extends Modules.ModuleBase {
 
     @ExecutorFunc("loaded")
     boolean loadedModules(Map<String, ?> data, Message message) {
-        String response = Modules.loadedModules.keySet().toString()
+        String response = (Modules.moduleInstances.getOrDefault(Commands.getContext(message), [:])?.keySet() +
+                Modules.moduleInstances.getOrDefault(null, [:]).keySet()).toString()
         if (message) message.reply("`$response`").queue()
         else println(response)
         true
