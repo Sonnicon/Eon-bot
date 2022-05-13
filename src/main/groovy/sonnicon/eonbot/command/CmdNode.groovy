@@ -23,25 +23,21 @@ class CmdNode {
 
     // slurper stuff
     void setChildData(Map<String, ?> childData) {
-        child = childTypes.get(childData.remove("type")) newInstance(childData)
+        // setProperty is a mess, this is much easier and cleaner
+        String type = childData.remove("type")
+        child = childTypes.get(type)?.newInstance(childData)
+        childData.put("type", type)
     }
 
-    // slurper stuff episode 2
-    void setExecutorKey(String executorKey) {
-        if (CommandRegistry.executorMap) {
-            this.executor = CommandRegistry.executorMap.get(executorKey)
-        }
-    }
-
-    // slurper stuff: the return of the king
+    // slurper stuff 2
     void setUid(String uid) {
-        this.id = (CommandRegistry.name ?: "null") + "-" + uid
+        this.id = "${CommandRegistry.name ?: 'null'}-$uid"
+        this.executor = CommandRegistry.executorMap?.get(uid)
     }
 
     void collect(CmdResponse response, List<String> data, Map<String, ?> parsed, Message message) {
         // check permissions
         if (!Commands.checkPermissions(message, id)) {
-            //if (!Commands.checkPermissions(message.author.idLong, message.isFromGuild() ? message.guild.idLong : 0, message.isFromGuild() ? message.member.getRoles() + message.guild.publicRole : null, id)) {
             response.set(CmdResponse.CmdResponseType.badPermission)
             return
         }

@@ -41,16 +41,13 @@ commands:
           childs:
             get:
               uid: "perms-get"
-              executorKey: "perms-get"
             set:
               uid: "perms-set"
-              executorKey: "perms-set"
               childData:
                 type: "boolean"
                 name: "value"
             drop:
               uid: "perms-drop"
-              executorKey: "perms-drop"
   group:
     uid: "group-operation"
     childData:
@@ -59,21 +56,18 @@ commands:
       childs:
         create:
           uid: "group-create"
-          executorKey: "group-create"
           childData:
             type: "string"
             regex: "^[a-zA-Z]+$"
             name: "name"
         delete:
           uid: "group-delete"
-          executorKey: "group-delete"
           childData:
             type: "string"
             regex: "^[a-zA-Z]+$"
             name: "name"
         add:
           uid: "group-add"
-          executorKey: "group-add"
           childData:
             type: "string"
             regex: "^[a-zA-Z]+$"
@@ -84,7 +78,6 @@ commands:
               name: "entity"
         remove:
           uid: "group-remove"
-          executorKey: "group-remove"
           childData:
             type: "string"
             regex: "^[a-zA-Z]+$"
@@ -95,7 +88,6 @@ commands:
               name: "entity"
         get:
           uid: "group-get"
-          executorKey: "group-get"
           childData:
             type: "branch"
             name: "entityType"

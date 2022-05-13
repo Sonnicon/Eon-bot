@@ -14,7 +14,7 @@ class Commands {
 
     protected static Closure messageListener = { MessageReceivedEvent event ->
         if (!event.author.isBot() && event.message.getContentRaw().startsWith(PREFIX)) {
-            handleCommand(event.message.getContentRaw().substring(PREFIX.length()), event.message as Message)
+            handleCommand(event.message.getContentRaw().substring(PREFIX.length()), event.message, getContext(event.message))
         }
     }
 
@@ -22,18 +22,16 @@ class Commands {
         EventHandler.register(MessageReceivedEvent.class, messageListener)
     }
 
-    static void handleCommand(String string, Message message = null) {
+    static void handleCommand(String string, Message message = null, String context = null) {
         ArrayList<String> split = split(string)
         Map<String, ?> parsed = [:]
-
-        CmdNode command = null
         String keyword = split.remove(0)
-        if (message) {
-            CommandRegistry.commands.get("${message.channelType.toString()}~${message.channel.id}")?.get(keyword)
-        }
 
+        CmdNode command = CommandRegistry.commands.get(context)?.get(keyword)
         if (!command) {
-            command = CommandRegistry.commands.get(null)?.get(keyword)
+            if (context){
+                command = CommandRegistry.commands.get(null)?.get(keyword)
+            }
             if (!command) {
                 reply("Command not found.", message, false)
                 return

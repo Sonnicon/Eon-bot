@@ -12,7 +12,7 @@ class Modules {
 
     static Map<String, ModuleMeta> moduleMetas = [:]
     // Map<context, Map<name, ModuleBase>>
-    static Map<String, Map<String, ModuleBase>> moduleInstances = [null: [:]] as Map<String, Map<String, ModuleBase>>
+    static Map<String, Map<String, ModuleBase>> moduleInstances = [:] as Map<String, Map<String, ModuleBase>>
 
     static {
         groovyScriptEngine = new GroovyScriptEngine(FileIO.FileType.modules.file.getAbsolutePath())
@@ -33,21 +33,26 @@ class Modules {
             return null
         }
 
-        if (meta.isShared) {
+        if (meta.isShared && context != null) {
+            if (!force) {
+                println "Not loading non-shared module '$name' with context '$context'."
+                return null
+            }
             context = null
-        } else if (context != null && !force) {
-            println "Not loading non-shared module '$name' with context '$context'."
-            return null
         }
 
-        moduleInstances.putIfAbsent(context, [:])
         Map<String, ModuleBase> map = moduleInstances.get(context)
-        if (map.containsKey(name)) {
+        if (map == null) {
+            map = [:]
+            moduleInstances.put(context, map)
+        } else if (map?.containsKey(name)) {
             if (moduleMetas.get(name).moduleBase == map.get(name).class && !force) {
                 println "Module '$name' for '$context' is already loaded and up to date, not forcing reload."
                 return null
             } else {
-                unloadModule(name, context)
+                unloadInstance(name, context)
+                moduleInstances.putIfAbsent(context, [:])
+                map = moduleInstances.get(context)
             }
         }
 
@@ -87,7 +92,7 @@ class Modules {
             ModuleMeta current = moduleMetas.get(name)
             if (current.lastChange >= lastChange && !force) {
                 println "Not loading moduleclass '$name'; already loaded and up to date."
-                return null
+                return current
             }
         }
 
@@ -100,7 +105,7 @@ class Modules {
         meta.lastChange = lastChange
 
         meta.dependencies?.each { String it ->
-            if (!loadClass(it)) {
+            if (!loadClass(it, force)) {
                 println "Could not load dependency '$it' for moduleclass '$name'."
                 return null
             }
@@ -116,7 +121,17 @@ class Modules {
         return new File(FileIO.FileType.modules.file, name + extension.extension)
     }
 
-    static void unloadModule(String name, String context = null) {
+    static boolean unloadModule(String name) {
+        !moduleInstances.find {
+            if (it.value.containsKey(name)) {
+                !unloadInstance(name, it.key)
+            } else {
+                false
+            }
+        } && unloadClass(name)
+    }
+
+    static boolean unloadInstance(String name, String context = null) {
         Map<String, ModuleBase> instances = moduleInstances.get(context)
         ModuleBase mod = instances?.get(name)
         if (mod) {
@@ -129,19 +144,17 @@ class Modules {
         } else {
             println "Could not unload module '$name' for context '$context'; Not found."
         }
+        mod
     }
 
-    static void unloadAllModule(String name) {
-        moduleInstances.keySet().each { unloadModule(name) }
-    }
-
-    static void unloadClass(String name) {
+    static boolean unloadClass(String name) {
         ModuleMeta c = moduleMetas.get(name)
         if (c) {
             moduleMetas.remove(name)
         } else {
             println "Could not unload moduleclass '$c'; Not found."
         }
+        c
     }
 
     enum FileExtension {

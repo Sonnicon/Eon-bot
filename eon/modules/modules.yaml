@@ -5,20 +5,80 @@ commands:
     childData:
       type: "branch"
       childs:
-        load:
-          uid: "load"
-          executorKey: "load"
+        loadModule:
+          uid: "loadModule"
           childData:
             type: "string"
             regex: "^.+$"
-            name: "name"
-        unload:
-          uid: "unload"
-          executorKey: "unload"
+            name: "module"
+          next:
+            uid: "loadModuleContext"
+            required: false
+            childData:
+              type: "string"
+              regex: "^.+$"
+              name: "context"
+            next:
+              uid: "loadModuleContextForce"
+              required: false
+              childData:
+                type: "boolean"
+                name: "force"
+        unloadModule:
+          uid: "unloadModule"
           childData:
             type: "string"
             regex: "^.+$"
-            name: "name"
+            name: "module"
+        loadClass:
+          uid: "loadClass"
+          childData:
+            type: "string"
+            regex: "^.+$"
+            name: "module"
+          next:
+            uid: "loadClassForce"
+            required: false
+            childData:
+              type: "boolean"
+              name: "force"
+        unloadClass:
+          uid: "unloadClass"
+          childData:
+            type: "string"
+            regex: "^.+$"
+            name: "module"
+        loadInstance:
+          uid: "loadInstance"
+          childData:
+            type: "string"
+            regex: "^.+$"
+            name: "module"
+          next:
+            uid: "loadInstanceContext"
+            required: false
+            childData:
+              type: "string"
+              regex: "^.+$"
+              name: "context"
+            next:
+              uid: "loadInstanceContextForce"
+              required: false
+              childData:
+                type: "boolean"
+                name: "force"
+        unloadInstance:
+          uid: "unloadInstance"
+          childData:
+            type: "string"
+            regex: "^.+$"
+            name: "module"
+          next:
+            uid: "unloadInstanceContext"
+            required: false
+            childData:
+              type: "string"
+              regex: "^.+$"
+              name: "context"
         loaded:
           uid: "loaded"
-          executorKey: "loaded"

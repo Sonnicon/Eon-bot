@@ -2,7 +2,6 @@
 commands:
   echo:
     uid: "echo"
-    executorKey: "echo"
     childData:
       type: "longstring"
       regex: "^.+$"
