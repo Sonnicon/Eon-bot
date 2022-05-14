@@ -1,6 +1,7 @@
 import net.dv8tion.jda.api.events.ReadyEvent
 import sonnicon.eonbot.core.EventHandler
 import sonnicon.eonbot.type.ExecutorFunc
+import sonnicon.eonbot.type.MessageProxy
 import sonnicon.eonbot.type.ModuleBase
 
 class startup extends ModuleBase {
@@ -15,9 +16,8 @@ class startup extends ModuleBase {
     }
 
     @ExecutorFunc("echo")
-    boolean echo(data, message) {
-        if (message) message.reply(data["text"]).queue()
-        else println data["text"]
+    boolean echo(Map<String, ?> data, MessageProxy message) {
+        message.reply(data["text"] as String)
         true
     }
 

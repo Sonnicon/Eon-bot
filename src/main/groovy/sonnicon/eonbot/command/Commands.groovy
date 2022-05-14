@@ -1,20 +1,22 @@
 package sonnicon.eonbot.command
 
-import net.dv8tion.jda.api.entities.Message
+
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.bson.Document
 import org.bson.types.ObjectId
 import sonnicon.eonbot.core.Database
 import sonnicon.eonbot.core.EventHandler
+import sonnicon.eonbot.type.MessageProxy
 
 class Commands {
     protected static final String PREFIX = '##'
     static final char[] quoteChars = ['"', '\'', '`', '“', '”', '’', '’'] as char[]
 
     protected static Closure messageListener = { MessageReceivedEvent event ->
-        if (!event.author.isBot() && event.message.getContentRaw().startsWith(PREFIX)) {
-            handleCommand(event.message.getContentRaw().substring(PREFIX.length()), event.message, getContext(event.message))
+        MessageProxy message = new MessageProxy(event.message)
+        if (!event.author.isBot() && message.getContentRaw().startsWith(PREFIX)) {
+            handleCommand(message.getContentRaw().substring(PREFIX.length()), message)
         }
     }
 
@@ -22,18 +24,19 @@ class Commands {
         EventHandler.register(MessageReceivedEvent.class, messageListener)
     }
 
-    static void handleCommand(String string, Message message = null, String context = null) {
+    static void handleCommand(String string, MessageProxy message) {
         ArrayList<String> split = split(string)
         Map<String, ?> parsed = [:]
         String keyword = split.remove(0)
 
-        CmdNode command = CommandRegistry.commands.get(context)?.get(keyword)
+        CmdNode command = CommandRegistry.commands.get(message.getContext())?.get(keyword)
         if (!command) {
-            if (context){
+            if (message.getContext()) {
                 command = CommandRegistry.commands.get(null)?.get(keyword)
             }
             if (!command) {
-                reply("Command not found.", message, false)
+                message.reply("Command not found.")
+                message.reactSuccess(false)
                 return
             }
         }
@@ -41,10 +44,15 @@ class Commands {
         CmdResponse response = new CmdResponse()
         command.collect(response, split, parsed, message)
         boolean success = response.type == CmdResponse.CmdResponseType.success
-        reply(success ? null : response.type.name(), message, success && response.executor.call(parsed, message))
+        if (!success) {
+            message.reply(response.type.name())
+            message.reactSuccess(false)
+        } else {
+            message.reactSuccess(response.executor.call(parsed, message))
+        }
     }
 
-    static boolean checkPermissions(Message message, String commandid) {
+    static boolean checkPermissions(MessageProxy message, String commandid) {
         return checkPermissions(message.getAuthor().getIdLong(),
                 message.isFromGuild() ? message.getGuild().getIdLong() : 0,
                 message.isFromGuild() ? message.getMember().getRoles() + message.getGuild().getPublicRole() : null,
@@ -98,19 +106,6 @@ class Commands {
         true
     }
 
-    protected static void reply(String string, Message message, boolean reaction) {
-        if (string) {
-            if (message) {
-                message.reply(string).queue()
-            } else {
-                println(string)
-            }
-        }
-        if (message) {
-            message.addReaction(reaction ? '✅' : '❎').queue()
-        }
-    }
-
     protected static List<String> split(String text) {
         String[] splinput = text.split(" ")
         List<String> out = []
@@ -147,10 +142,5 @@ class Commands {
         if (joiner.length() > 0)
             out.add(joiner.toString())
         out
-    }
-
-    static String getContext(Message message) {
-        if (!message) null
-        "${message.channelType.toString()}~${message.channel.id}"
     }
 }

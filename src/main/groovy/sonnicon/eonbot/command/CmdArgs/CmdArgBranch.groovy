@@ -1,8 +1,8 @@
 package sonnicon.eonbot.command.CmdArgs
 
-import net.dv8tion.jda.api.entities.Message
 import sonnicon.eonbot.command.CmdNode
 import sonnicon.eonbot.command.CmdResponse
+import sonnicon.eonbot.type.MessageProxy
 
 
 class CmdArgBranch extends CmdArg {
@@ -12,7 +12,7 @@ class CmdArgBranch extends CmdArg {
         childs.each { this.childs.put(it.key, it.value as CmdNode) }
     }
 
-    void collect(CmdResponse response, List<String> input, Map<String, Object> parsed, Message message) {
+    void collect(CmdResponse response, List<String> input, Map<String, Object> parsed, MessageProxy message) {
         String key = input.remove(0)
         if (childs.containsKey(key)) {
             parsed.put(name, key)

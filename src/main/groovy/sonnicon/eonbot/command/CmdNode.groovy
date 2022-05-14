@@ -1,7 +1,7 @@
 package sonnicon.eonbot.command
 
-import net.dv8tion.jda.api.entities.Message
 import sonnicon.eonbot.command.CmdArgs.*
+import sonnicon.eonbot.type.MessageProxy
 
 class CmdNode {
     // core node data
@@ -35,7 +35,7 @@ class CmdNode {
         this.executor = CommandRegistry.executorMap?.get(uid)
     }
 
-    void collect(CmdResponse response, List<String> data, Map<String, ?> parsed, Message message) {
+    void collect(CmdResponse response, List<String> data, Map<String, ?> parsed, MessageProxy message) {
         // check permissions
         if (!Commands.checkPermissions(message, id)) {
             response.set(CmdResponse.CmdResponseType.badPermission)

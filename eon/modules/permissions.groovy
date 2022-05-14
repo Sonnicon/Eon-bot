@@ -1,10 +1,10 @@
 import com.mongodb.client.model.Filters
-import net.dv8tion.jda.api.entities.Message
 import org.bson.Document
 import org.bson.types.ObjectId
 import sonnicon.eonbot.command.Commands
 import sonnicon.eonbot.core.Database
 import sonnicon.eonbot.type.ExecutorFunc
+import sonnicon.eonbot.type.MessageProxy
 import sonnicon.eonbot.type.ModuleBase
 
 class permissions extends ModuleBase {
@@ -12,7 +12,7 @@ class permissions extends ModuleBase {
     void load() {}
 
     @ExecutorFunc("perms-get")
-    boolean permsGet(Map<String, ?> data, Message message) {
+    boolean permsGet(Map<String, ?> data, MessageProxy message) {
         var entity = data.get("entity")
         String target = data.get("target")
         long guild = 0
@@ -21,7 +21,7 @@ class permissions extends ModuleBase {
         switch (data.get("entityType")) {
             case ("user"):
                 if (message && !message.isFromGuild()) {
-                    message.reply("`user` entity is only available in guilds. Please use `globaluser`.").queue()
+                    message.reply("`user` entity is only available in guilds. Please use `globaluser`.")
                     return false
                 }
                 guild = message.guild.idLong
@@ -43,19 +43,19 @@ class permissions extends ModuleBase {
         }
 
         if (doc && doc.containsKey("permissions") && (doc.get("permissions") as Map).containsKey(target)) {
-            message.reply((doc.get("permissions") as Map).get(target).toString()).queue()
+            message.reply((doc.get("permissions") as Map).get(target).toString())
             return true
         }
 
-        message.reply("Not found.").queue()
+        message.reply("Not found.")
         false
     }
 
     @ExecutorFunc("perms-set")
-    boolean permsSet(Map<String, ?> data, Message message) {
+    boolean permsSet(Map<String, ?> data, MessageProxy message) {
         if (!Commands.checkPermissions(message, data.get("target") as String)) {
             if (message && !message.isFromGuild()) {
-                message.reply("Cannot set permissions you do not have.").queue()
+                message.reply("Cannot set permissions you do not have.")
             }
             return false
         }
@@ -68,7 +68,7 @@ class permissions extends ModuleBase {
         switch (data.get("entityType")) {
             case ("user"):
                 if (message && !message.isFromGuild()) {
-                    message.reply("`user` entity is only available in guilds. Please use `globaluser`.").queue()
+                    message.reply("`user` entity is only available in guilds. Please use `globaluser`.")
                     return false
                 }
                 guild = message.guild.idLong
@@ -94,10 +94,10 @@ class permissions extends ModuleBase {
     }
 
     @ExecutorFunc("perms-drop")
-    boolean permsDrop(Map<String, ?> data, Message message) {
+    boolean permsDrop(Map<String, ?> data, MessageProxy message) {
         if (!Commands.checkPermissions(message, data.get("target") as String)) {
             if (message) {
-                message.reply("Cannot drop permissions you do not have.").queue()
+                message.reply("Cannot drop permissions you do not have.")
             }
             return false
         }
@@ -110,7 +110,7 @@ class permissions extends ModuleBase {
         switch (data.get("entityType")) {
             case ("user"):
                 if (message) {
-                    message.reply("`user` entity is only available in guilds. Please use `globaluser`.").queue()
+                    message.reply("`user` entity is only available in guilds. Please use `globaluser`.")
                     return false
                 }
                 guild = message.guild.idLong
@@ -134,19 +134,19 @@ class permissions extends ModuleBase {
     }
 
     @ExecutorFunc("group-create")
-    boolean groupCreate(Map<String, ?> data, Message message) {
+    boolean groupCreate(Map<String, ?> data, MessageProxy message) {
         Database.createGroup(data.get("name") as String)
         true
     }
 
     @ExecutorFunc("group-delete")
-    boolean groupDelete(Map<String, ?> data, Message message) {
+    boolean groupDelete(Map<String, ?> data, MessageProxy message) {
         Database.cGroups.deleteOne(Filters.eq("name", data.get("name"))).getDeletedCount() > 0
         true
     }
 
     @ExecutorFunc("group-add")
-    boolean groupAdd(Map<String, ?> data, Message message) {
+    boolean groupAdd(Map<String, ?> data, MessageProxy message) {
         Document docGroup = Database.getGroup(data.get("name") as String)
         if (!docGroup) return false
         Document docUser = Database.getUser(data.get("entity") as long)
@@ -164,7 +164,7 @@ class permissions extends ModuleBase {
     }
 
     @ExecutorFunc("group-remove")
-    boolean groupRemove(Map<String, ?> data, Message message) {
+    boolean groupRemove(Map<String, ?> data, MessageProxy message) {
         Document docGroup = Database.getGroup(data.get("target") as String)
         if (!docGroup) return false
         Document docUser = Database.getUser(data.get("entity") as long)
@@ -182,7 +182,7 @@ class permissions extends ModuleBase {
     }
 
     @ExecutorFunc("group-get")
-    boolean groupGet(Map<String, ?> data, Message message) {
+    boolean groupGet(Map<String, ?> data, MessageProxy message) {
         var entity = data.get("entity")
         Document doc
 
@@ -192,7 +192,7 @@ class permissions extends ModuleBase {
                 List groups = doc.get("groups").collect {
                     Database.getGroupById(it as ObjectId).get("name")
                 }
-                message.reply("Found `${groups.size()}` groups: ```${groups.join(", ")}```").queue()
+                message.reply("Found `${groups.size()}` groups: ```${groups.join(", ")}```")
                 break
 
             case ("group"):
@@ -200,7 +200,7 @@ class permissions extends ModuleBase {
                 List users = doc.get("users").collect {
                     Database.getUserById(it as ObjectId).get("user")
                 }
-                message.reply("Found `${users.size()}` users: ```${users.join(", ")} ```").queue()
+                message.reply("Found `${users.size()}` users: ```${users.join(", ")} ```")
                 break
 
             default:

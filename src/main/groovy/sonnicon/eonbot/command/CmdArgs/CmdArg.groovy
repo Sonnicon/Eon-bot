@@ -1,12 +1,12 @@
 package sonnicon.eonbot.command.CmdArgs
 
-import net.dv8tion.jda.api.entities.Message
 import sonnicon.eonbot.command.CmdResponse
+import sonnicon.eonbot.type.MessageProxy
 
 abstract class CmdArg {
     String name
 
-    void collect(CmdResponse response, List<String> data, Map<String, Object> parsed, Message message) {
+    void collect(CmdResponse response, List<String> data, Map<String, Object> parsed, MessageProxy message) {
         if (!collect(data.remove(0), parsed)) {
             response.set(CmdResponse.CmdResponseType.illegalArg)
         }
