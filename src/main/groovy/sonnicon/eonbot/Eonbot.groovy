@@ -2,6 +2,7 @@ package sonnicon.eonbot
 
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.requests.GatewayIntent
 import sonnicon.eonbot.command.Commands
 import sonnicon.eonbot.core.Config
 import sonnicon.eonbot.core.Database
@@ -16,7 +17,8 @@ class Eonbot {
     static Commands commands = new Commands()
 
     static void main(String[] args) {
-        jda = JDABuilder.createDefault(config.getToken())
+        jda = JDABuilder.createDefault(Eonbot.config.getToken())
+                .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
                 .addEventListeners(new EventHandler())
                 .build()
     }

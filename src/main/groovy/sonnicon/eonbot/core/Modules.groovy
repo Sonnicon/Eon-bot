@@ -35,7 +35,7 @@ class Modules {
 
         if (meta.isShared && context != null) {
             if (!force) {
-                println "Not loading non-shared module '$name' with context '$context'."
+                println "Not loading shared module '$name' with context '$context'."
                 return null
             }
             context = null

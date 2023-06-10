@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     implementation 'org.apache.groovy:groovy-yaml:4.0.0'
-    implementation('net.dv8tion:JDA:5.0.0-alpha.9') {
+    implementation('net.dv8tion:JDA:5.0.0-beta.10') {
         exclude module: 'opus-java'
     }
     implementation 'org.mongodb:mongodb-driver-sync:4.5.0'

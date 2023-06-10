@@ -4,8 +4,6 @@ import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import org.jetbrains.annotations.NotNull
 
-import javax.annotation.Nonnull
-
 class EventHandler implements EventListener {
     static protected Map<Class<GenericEvent>, ArrayList<Closure>> events = [:]
 
@@ -33,7 +31,7 @@ class EventHandler implements EventListener {
     }
 
     @Override
-    void onEvent(@NotNull @Nonnull GenericEvent event) {
+    void onEvent(@NotNull GenericEvent event) {
         ArrayList<Closure> list = events.get(event.class)
         if (list != null) {
             invoking = event.class

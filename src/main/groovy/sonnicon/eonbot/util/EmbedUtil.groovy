@@ -12,6 +12,7 @@ class EmbedUtil {
     }
 
     static void setDefaults(MessageProxy message) {
+        embedBuilder.clear()
         setAuthorFooter(message)
     }
 

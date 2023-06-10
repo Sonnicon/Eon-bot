@@ -2,6 +2,7 @@ package sonnicon.eonbot.type
 
 import groovy.util.Proxy
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import sonnicon.eonbot.util.EmbedUtil
 
 class MessageProxy extends Proxy {
@@ -18,7 +19,7 @@ class MessageProxy extends Proxy {
         if (message()) {
             EmbedUtil.setDefaults(this)
             EmbedUtil.addText(content.toString())
-            message().getChannel().sendMessageEmbeds(EmbedUtil.embed()).reference(message()).queue()
+            message().getChannel().sendMessageEmbeds(EmbedUtil.embed()).setMessageReference(message()).queue()
             //message().getChannel().sendMessage(content).reference(message()).queue()
         } else {
             println(content)
@@ -26,7 +27,7 @@ class MessageProxy extends Proxy {
     }
 
     void reactSuccess(boolean success = true) {
-        message().addReaction(success ? '✅' : '❎').queue()
+        message().addReaction(success ? Emoji.fromUnicode('✅') : Emoji.fromUnicode('❎')).queue()
     }
 
     String getContext() {
