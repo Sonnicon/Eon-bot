@@ -6,7 +6,7 @@ import sonnicon.eonbot.type.ModuleBase
 
 class startup extends ModuleBase {
 
-    void load() {
+    void load(String context) {
         Closure readyEventClosure
         readyEventClosure = { ReadyEvent it ->
             println "Bot connected and ready!"
@@ -19,9 +19,5 @@ class startup extends ModuleBase {
     boolean echo(Map<String, ?> data, MessageProxy message) {
         message.reply(data["text"] as String)
         true
-    }
-
-    void unload() {
-
     }
 }

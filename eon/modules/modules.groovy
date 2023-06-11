@@ -6,10 +6,6 @@ import sonnicon.eonbot.type.ModuleBase
 //todo make message wrapper with all of this boilerplate
 class modules extends ModuleBase {
 
-    void load() {}
-
-    void unload() {}
-
     @ExecutorFunc("loadModule")
     boolean loadModule(Map<String, ?> data, MessageProxy message) {
         String context = data.getOrDefault("context", message.getContext())

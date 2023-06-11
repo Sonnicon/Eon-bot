@@ -9,8 +9,6 @@ import sonnicon.eonbot.type.ModuleBase
 
 class permissions extends ModuleBase {
 
-    void load() {}
-
     @ExecutorFunc("perms-get")
     boolean permsGet(Map<String, ?> data, MessageProxy message) {
         var entity = data.get("entity")
@@ -208,6 +206,4 @@ class permissions extends ModuleBase {
         }
         true
     }
-
-    void unload() {}
 }
