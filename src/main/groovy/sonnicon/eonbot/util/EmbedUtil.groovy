@@ -34,6 +34,15 @@ class EmbedUtil {
     }
 
     /**
+     * Set title of the embed.
+     * @param title New title text
+     * @param url URL link on the title
+     */
+    static void setTitle(String title, String url = null) {
+        embedBuilder.setTitle(title, url)
+    }
+
+    /**
      * Add text to the current embed.
      * @param value Text to be added
      * @param name Field to be added to

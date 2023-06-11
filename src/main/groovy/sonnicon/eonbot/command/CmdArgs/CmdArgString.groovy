@@ -11,6 +11,10 @@ class CmdArgString extends CmdArg {
      * A pattern for validating input strings.
      */
     protected Pattern pattern
+    /**
+     * Whether to parse the string as lowercase.
+     */
+    protected boolean lower = false
 
     /**
      * Set the filter of the argument to a new regular expression.
@@ -23,7 +27,7 @@ class CmdArgString extends CmdArg {
 
     protected boolean collect(String input, Map<String, Object> parsed) {
         // Ensure matching
-        Matcher matcher = pattern.matcher(input)
+        Matcher matcher = pattern.matcher(lower ? input.toLowerCase() : input)
         if (!matcher.find(0)) return false
         // Add to data
         parsed.put(name, matcher.group())

@@ -1,0 +1,9 @@
+---
+commands:
+  tgstation:
+    uid: "tgstation"
+    childData:
+      type: "string"
+      regex: "^(bagil)|(sybil)|(sybil2)|(eventhall)|(eventhallus)|(terry)|(dmca)|(ftl13)|(campbell)$"
+      lower: true
+      name: "server"

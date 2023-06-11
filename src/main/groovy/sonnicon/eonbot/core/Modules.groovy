@@ -48,8 +48,8 @@ class Modules {
     /**
      * Create and load an instance of a module for a context. Reloads if a newer class is available.
      * @param name Name of the module
-     * @param context Context for which the module will be loaded
-     * @param force If true; fix context for shared modules, reload if same class already loaded
+     * @param context Context for which the module will be loaded, set to null on shared modules
+     * @param force If true; load on context for shared modules, reload if same class already loaded
      * @return Instance of the loaded module, null if nothing loaded
      */
     static ModuleBase loadInstance(String name, String context = null, boolean force = false) {
@@ -64,11 +64,9 @@ class Modules {
         if (meta.isShared && context != null) {
             // Unless we force
             if (!force) {
-                println "Not loading shared module '$name' with context '$context'."
-                return null
+                println "Fixing loading shared module '$name' from context '$context' to context 'null'."
+                context = null
             }
-            // If we force, then we fix the context
-            context = null
         }
 
 
@@ -116,7 +114,7 @@ class Modules {
         }
 
         // Module init
-        instance.load()
+        instance.load(context)
         println "Loaded module '$name'${context == null ? "." : " with context '$context'."}"
         instance
     }

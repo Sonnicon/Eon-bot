@@ -9,8 +9,8 @@ class modules extends ModuleBase {
     @ExecutorFunc("loadModule")
     boolean loadModule(Map<String, ?> data, MessageProxy message) {
         String context = data.getOrDefault("context", message.getContext())
-        boolean result = Modules.loadModule(data["module"] as String, context, data.get("force") as boolean)
-        message.reply("${result ? 'Loaded' : 'Failed to load'} module ${data["module"]} for context $context.")
+        Object result = Modules.loadModule(data["module"] as String, context, data.get("force") as boolean)
+        message.reply("${result ? 'Loaded' : 'Failed to load'} module ${data["module"]} for context ${result.context}.")
         result
     }
 
@@ -38,8 +38,8 @@ class modules extends ModuleBase {
     @ExecutorFunc("loadInstance")
     boolean loadInstance(Map<String, ?> data, MessageProxy message) {
         String context = data.getOrDefault("context", message.getContext())
-        boolean result = Modules.loadInstance(data["module"] as String, context, data.get("force") as boolean)
-        message.reply("${result ? 'Loaded' : 'Failed to load'} instance ${data["module"]} for context $context.")
+        Object result = Modules.loadInstance(data["module"] as String, context, data.get("force") as boolean)
+        message.reply("${result ? 'Loaded' : 'Failed to load'} instance ${data["module"]} for context ${result.context}.")
         result
     }
 

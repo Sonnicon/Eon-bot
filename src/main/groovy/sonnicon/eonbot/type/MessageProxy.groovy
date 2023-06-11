@@ -2,6 +2,7 @@ package sonnicon.eonbot.type
 
 import groovy.util.Proxy
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import sonnicon.eonbot.util.EmbedUtil
 
@@ -36,6 +37,14 @@ class MessageProxy extends Proxy {
         } else {
             // If we're pretending there was a message, respond in console
             println(content)
+        }
+    }
+
+    void replyEmbed(MessageEmbed embed) {
+        if (message()) {
+            message().getChannel().sendMessageEmbeds(embed).setMessageReference(message()).queue()
+        } else {
+            println(embed.dump())
         }
     }
 
